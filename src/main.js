@@ -1,14 +1,9 @@
 import * as html from "./jsui/html.js";
+import * as layout from "./jsui/layout.js";
 
-var p = html.p({parent: document.body, innerHTML: "The quick brown fox"});
-//var a1 = html.a({parent : document.body, href : "http://www.in.gr",  innerHTML : "Goto to in.gr", naming: "Link1"});
+let hbox1 = layout.vbox({parent: document.body});
+console.log(hbox1);
 
-//var btn1 = html.button({parent : document.body, innerHTML: "Click me!", onclick: function(){ alert("You clicked a button!"); }});
-
-html.p({parent: document.body, innerHTML: "Jumps over the lazy dog"}, html.button({innerHTML: "text"}));
-
-html.ol({parent: document.body}, 
-    html.li({innerHTML: "Item1"}),
-    html.li({innerHTML: "Item2"}),
-    html.li({}));
-    
+let btn1 = html.button({parent: hbox1, innerHTML: "Button 1"});
+let btn2 = html.button({parent: hbox1, innerHTML: "Button 2", style: { flexGrow: 1}});
+let btn3 = html.button({parent: hbox1, innerHTML: "Button 3"});
