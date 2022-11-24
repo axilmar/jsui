@@ -38,3 +38,22 @@ export function vbox(properties, ...children) {
     
     return resultElement;
 }
+
+
+export function spacer(properties, ...children) {
+    //create the object
+    let resultElement = div(null, ...children);
+    
+    //set the default properties
+    resultElement.style.width = "100%";
+    resultElement.style.height = "100%";
+    resultElement.style.flexGrow = "1";
+    
+    //set the css
+    resultElement.className = "jsui-spacer";
+    
+    //set the given properties
+    applyProperties(resultElement, properties);
+    
+    return resultElement;
+}
