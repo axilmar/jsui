@@ -1,7 +1,7 @@
 import * as html from "./src/html.js";
-import * as layout from "./src/layout.js";
+import * as layouts from "./src/layouts.js";
 
-let hbox1 = layout.hbox({parent: document.body});
+let hbox1 = layouts.hbox({parent: document.body});
 let btn1 = html.button({parent: hbox1, innerHTML: "Button 1"});
 let btn2 = html.button({parent: hbox1, innerHTML: "Button 2", style: { flexGrow: 1}});
 let btn3 = html.button({parent: hbox1, innerHTML: "Button 3"});
