@@ -3,7 +3,7 @@ import { div } from "./html.js";
 
 
 export function hbox(properties, ...children) {
-    //create the object with no properties
+    //create the object
     let resultElement = div(null, ...children);
     
     //set the default properties
@@ -11,10 +11,10 @@ export function hbox(properties, ...children) {
     resultElement.style.display = "flex";
     resultElement.style.flexDirection = "row";
     
-    //set the properties from css after setting the default properties
+    //set the css
     resultElement.className = "jsui-hbox";
     
-    //set the external properties after setting the default properties and the properties from css 
+    //set the given properties
     applyProperties(resultElement, properties);
     
     return resultElement;
@@ -22,7 +22,7 @@ export function hbox(properties, ...children) {
 
 
 export function vbox(properties, ...children) {
-    //create the object with no properties
+    //create the object
     let resultElement = div(null, ...children);
     
     //set the default properties
@@ -30,10 +30,10 @@ export function vbox(properties, ...children) {
     resultElement.style.display = "flex";
     resultElement.style.flexDirection = "column";
     
-    //set the properties from css after setting the default properties
+    //set the css
     resultElement.className = "jsui-vbox";
     
-    //set the external properties after setting the default properties and the properties from css 
+    //set the given properties
     applyProperties(resultElement, properties);
     
     return resultElement;
