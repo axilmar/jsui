@@ -1,5 +1,5 @@
-import * as html from "./jsui/html.js";
-import * as layout from "./jsui/layout.js";
+import * as html from "../src/html.js";
+import * as layout from "../src/layout.js";
 
 let hbox1 = layout.vbox({parent: document.body});
 let btn1 = html.button({parent: hbox1, innerHTML: "Button 1"});
