@@ -1,0 +1,39 @@
+@import "./variables.css";
+
+
+.jsui-primary-button:enabled {
+    background-color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+    font-family: var(--md-sys-typescale-label-large-font);
+    line-height: var(--md-sys-typescale-label-large-line-height);
+    font-size: var(--md-sys-typescale-label-large-size);
+    letter-spacing: var(--md-sys-typescale-label-large-tracking);
+    font-weight: var(--md-sys-typescale-label-large-weight);
+    height: var(--jsui-common-button-height);
+    padding-left: var(--jsui-common-button-padding-left);
+    padding-right: var(--jsui-common-button-padding-right);
+    border-top-left-radius: var(--jsui-common-button-border-top-left-radius);
+    border-top-right-radius: var(--jsui-common-button-border-top-right-radius);
+    border-bottom-left-radius: var(--jsui-common-button-border-bottom-left-radius);
+    border-bottom-right-radius: var(--jsui-common-button-border-bottom-right-radius);
+    border-width: var(--jsui-common-button-border-width);
+}
+
+
+.jsui-primary-button:disabled {
+    background-color: var(jsui-common-button-disabled-background-color);
+    color: var(--jsui-common-button-disabled-text);
+    font-family: var(--md-sys-typescale-label-large-font);
+    line-height: var(--md-sys-typescale-label-large-line-height);
+    font-size: var(--md-sys-typescale-label-large-size);
+    letter-spacing: var(--md-sys-typescale-label-large-tracking);
+    font-weight: var(--md-sys-typescale-label-large-weight);
+    height: var(--jsui-common-button-height);
+    padding-left: var(--jsui-common-button-padding-left);
+    padding-right: var(--jsui-common-button-padding-right);
+    border-top-left-radius: var(--jsui-common-button-border-top-left-radius);
+    border-top-right-radius: var(--jsui-common-button-border-top-right-radius);
+    border-bottom-left-radius: var(--jsui-common-button-border-bottom-left-radius);
+    border-bottom-right-radius: var(--jsui-common-button-border-bottom-right-radius);
+    border-width: var(--jsui-common-button-border-width);
+}

@@ -1,10 +1,10 @@
 import { applyProperties } from "./util.js";
-import { span } from "./html.js";
+import { div } from "./html.js";
 
 
 export function hbox(properties, ...children) {
     //create the object
-    let resultElement = span(null, ...children);
+    let resultElement = div(null, ...children);
     
     //set the default properties
     resultElement.style.width = "100%";
@@ -23,7 +23,7 @@ export function hbox(properties, ...children) {
 
 export function vbox(properties, ...children) {
     //create the object
-    let resultElement = span(null, ...children);
+    let resultElement = div(null, ...children);
     
     //set the default properties
     resultElement.style.height = "100%";
@@ -42,11 +42,12 @@ export function vbox(properties, ...children) {
 
 export function spacer(properties, ...children) {
     //create the object
-    let resultElement = span(null, ...children);
+    let resultElement = div(null, ...children);
     
     //set the default properties
     resultElement.style.width = "100%";
     resultElement.style.height = "100%";
+    resultElement.style.display = "flex";
     resultElement.style.flexGrow = "1";
     
     //set the css

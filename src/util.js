@@ -26,10 +26,20 @@ export function applyProperties(elementObject, properties) {
 }
 
 
+export function isString(object) {
+    return typeof object === 'string' || object instanceof String;
+}
+
+
 export function addChildren(elementObject, children) {
     if (children != null && children.length > 0) {
         children.forEach(function (child) {
-            elementObject.appendChild(child);
+            if (isString(child)) {
+                elementObject.innerHTML += child;
+            }
+            else {
+                elementObject.appendChild(child);
+            }
         });
     }
 }
