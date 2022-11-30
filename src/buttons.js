@@ -1,5 +1,6 @@
 import { applyProperties } from "./util.js";
 import { button } from "./html.js";
+import { svgIcon } from "./icons.js";
 
 
 export function primaryButton(properties, ...children) {

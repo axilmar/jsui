@@ -1,39 +1,50 @@
 @import "./variables.css";
 
 
-.jsui-primary-button:enabled {
-    background-color: var(--md-sys-color-primary);
-    color: var(--md-sys-color-on-primary);
+.jsui-primary-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     font-family: var(--md-sys-typescale-label-large-font);
     line-height: var(--md-sys-typescale-label-large-line-height);
     font-size: var(--md-sys-typescale-label-large-size);
     letter-spacing: var(--md-sys-typescale-label-large-tracking);
     font-weight: var(--md-sys-typescale-label-large-weight);
-    height: var(--jsui-common-button-height);
-    padding-left: var(--jsui-common-button-padding-left);
-    padding-right: var(--jsui-common-button-padding-right);
-    border-top-left-radius: var(--jsui-common-button-border-top-left-radius);
-    border-top-right-radius: var(--jsui-common-button-border-top-right-radius);
-    border-bottom-left-radius: var(--jsui-common-button-border-bottom-left-radius);
-    border-bottom-right-radius: var(--jsui-common-button-border-bottom-right-radius);
-    border-width: var(--jsui-common-button-border-width);
+    height: 40px;
+    padding-left: 24px;
+    padding-right: 24px;
+    border-top-left-radius: 32px 32px;
+    border-top-right-radius: 32px 32px;
+    border-bottom-left-radius: 32px 32px;
+    border-bottom-right-radius: 32px 32px;
+}
+
+
+.jsui-primary-button:enabled {
+    background-color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+    border-width: 0;
 }
 
 
 .jsui-primary-button:disabled {
-    background-color: var(jsui-common-button-disabled-background-color);
-    color: var(--jsui-common-button-disabled-text);
-    font-family: var(--md-sys-typescale-label-large-font);
-    line-height: var(--md-sys-typescale-label-large-line-height);
-    font-size: var(--md-sys-typescale-label-large-size);
-    letter-spacing: var(--md-sys-typescale-label-large-tracking);
-    font-weight: var(--md-sys-typescale-label-large-weight);
-    height: var(--jsui-common-button-height);
-    padding-left: var(--jsui-common-button-padding-left);
-    padding-right: var(--jsui-common-button-padding-right);
-    border-top-left-radius: var(--jsui-common-button-border-top-left-radius);
-    border-top-right-radius: var(--jsui-common-button-border-top-right-radius);
-    border-bottom-left-radius: var(--jsui-common-button-border-bottom-left-radius);
-    border-bottom-right-radius: var(--jsui-common-button-border-bottom-right-radius);
-    border-width: var(--jsui-common-button-border-width);
+    background-color: rgba(28, 27, 31, 12%);
+    color: rgba(28, 27, 31, 38%);
+    border-width: 0;
+}
+
+
+.jsui-primary-button .svg-icon {
+    width: 18px;
+    height: 18px;    
+}
+
+
+.jsui-primary-button:enabled .svg-icon {
+    background-color: var(--md-sys-color-on-primary);
+}
+
+
+.jsui-primary-button:disabled .svg-icon {
+    background-color: rgba(28, 27, 31, 38%);
 }

@@ -8,15 +8,4 @@
     --md-sys-typescale-label-large-tracking: 1.25px;
     --md-sys-typescale-label-large-weight: 500;
     --md-sys-color-on-surface: #1C1B1F;
-    
-    --jsui-common-button-height: 40px;
-    --jsui-common-button-padding-left:24px;
-    --jsui-common-button-padding-right:24px;
-    --jsui-common-button-border-top-left-radius:32px 32px;
-    --jsui-common-button-border-top-right-radius:32px 32px;
-    --jsui-common-button-border-bottom-left-radius:32px 32px;
-    --jsui-common-button-border-bottom-right-radius:32px 32px;
-    --jsui-common-button-border-width: 0;
-    --jsui-common-button-disabled-background-color: rgba(28, 27, 31, 12%);
-    --jsui-common-button-disabled-text: rgba(28, 27, 31, 38%);
 }
