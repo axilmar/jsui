@@ -1,8 +1,17 @@
 import { applyProperties, addChildren } from "./util.js";
 
 
+function addExtraProperties(element) {
+    Object.defineProperty(element, "enabled", {
+        get: function() { return !this.disabled; },
+        set: function(v) { this.disabled = !v; }
+    });
+}
+
+
 function createElement(name, properties, children) {
     let resultElement = document.createElement(name);
+    addExtraProperties(resultElement);
     applyProperties(resultElement, properties);
     addChildren(resultElement, children);
     return resultElement;    

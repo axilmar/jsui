@@ -9,5 +9,6 @@
     --md-sys-typescale-label-large-weight: 500;
     --md-sys-color-on-surface: #1C1B1F;
     
+    --jsui-disabled-background-color: rgba(28, 27, 31, 12%);
     --jsui-disabled-text-color: rgba(28, 27, 31, 38%);
 }

@@ -15,7 +15,7 @@ let btn3 = html.button({parent: hbox1, innerHTML: "Button 3"});
 //icons.icon({parent: document.body, src: "/temp/test.png"});
 //icons.icon({parent: document.body, src: "/themes/material/icons/account.svg", style: {width:"32px", height:"32px", color: "red"}});
 
-let primaryButton = buttons.primaryButton({parent: document.body, disabled : false, classes: ""}, 
+let primaryButton = buttons.primaryButton({parent: document.body, enabled : true}, 
     icons.icon({src: "/themes/material/icons/account.svg"}),
     //icons.icon({src: "/temp/test.png"}),
     "Primary Button");

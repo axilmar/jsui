@@ -20,6 +20,11 @@
 }
 
 
+.jsui-primary-button-icon-left {
+    padding-left: 16px;
+}
+
+
 .jsui-primary-button:enabled {
     background-color: var(--md-sys-color-primary);
     color: var(--md-sys-color-on-primary);
@@ -28,7 +33,7 @@
 
 
 .jsui-primary-button:disabled {
-    background-color: rgba(28, 27, 31, 12%);
+    background-color: var(--jsui-disabled-background-color);
     color: var(--jsui-disabled-text-color);
     border-width: 0;
 }
