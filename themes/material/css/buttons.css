@@ -29,22 +29,22 @@
 
 .jsui-primary-button:disabled {
     background-color: rgba(28, 27, 31, 12%);
-    color: rgba(28, 27, 31, 38%);
+    color: var(--jsui-disabled-text-color);
     border-width: 0;
 }
 
 
-.jsui-primary-button .svg-icon {
+.jsui-primary-button .jsui-icon {
     width: 18px;
     height: 18px;    
 }
 
 
-.jsui-primary-button:enabled .svg-icon {
+.jsui-primary-button:enabled .jsui-icon {
     background-color: var(--md-sys-color-on-primary);
 }
 
 
-.jsui-primary-button:disabled .svg-icon {
-    background-color: rgba(28, 27, 31, 38%);
+.jsui-primary-button:disabled .jsui-icon {
+    background-color: var(--jsui-disabled-text-color);
 }

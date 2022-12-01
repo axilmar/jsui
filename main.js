@@ -12,17 +12,11 @@ let btn3 = html.button({parent: hbox1, innerHTML: "Button 3"});
 //let div1 = html.div({parent: document.body, style: { width: "10%", height: "100%", backgroundColor: "blue"}});
 */
 
-/*
-let primaryButton = buttons.primaryButton({parent: document.body, disabled : true, classes: ""}, 
-    icons.svgIcon({src: "/themes/material/icons/account.svg"}),
+//icons.icon({parent: document.body, src: "/temp/test.png"});
+//icons.icon({parent: document.body, src: "/themes/material/icons/account.svg", style: {width:"32px", height:"32px", color: "red"}});
+
+let primaryButton = buttons.primaryButton({parent: document.body, disabled : false, classes: ""}, 
+    icons.icon({src: "/themes/material/icons/account.svg"}),
+    //icons.icon({src: "/temp/test.png"}),
     "Primary Button");
- */
 
-//icons.svgIcon({parent: document.body, src: "/themes/material/icons/account.svg", style:{width:"18px", height:"18px", color: "red"}});
-
-
-//html.img({parent: document.body, style: {width:"64px", height: "64px", maskImage: "url(/themes/material/icons/account.svg)", backgroundColor: "red"}});
-
-
-icons.icon({parent: document.body, src: "/temp/test.png"});
-icons.icon({parent: document.body, src: "/themes/material/icons/account.svg", style: {width:"32px", height:"32px", color: "red"}});
