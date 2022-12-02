@@ -43,3 +43,8 @@ export function addChildren(elementObject, children) {
         });
     }
 }
+
+
+export function classListContains(elementObject, className) {
+    return typeof elementObject.classList !== "undefined" && elementObject.classList.contains(className);
+}
