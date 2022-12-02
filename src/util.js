@@ -15,6 +15,10 @@ export function applyProperties(elementObject, properties) {
                 applyProperties(elementObject.style, value);
             }
             
+            else if (key == "classes") {
+                elementObject.className += " " + value;
+            }
+            
             else {
                 if (!(key in elementObject)) {
                     console.warn("Adding new property \"" + key + "\" with value \"" + value + "\".");
