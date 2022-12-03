@@ -2,6 +2,7 @@ import { applyProperties, classListContains } from "./util.js";
 import { button } from "./html.js";
 
 
+/*
 function isButtonWithIcon(button) {
     return button.childNodes.length >= 2 && button.childNodes[0].classList.contains("jsui-icon");
 }
@@ -35,3 +36,4 @@ export function primaryButton(properties, ...children) {
     
     return resultElement;
 }
+*/
