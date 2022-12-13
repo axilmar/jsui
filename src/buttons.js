@@ -1,39 +1,24 @@
-import { applyProperties, classListContains } from "./util.js";
-import { button } from "./html.js";
+import { applyProperties, addChildren, classListContains } from "./util.js";
+import { button, div } from "./html.js";
 
 
-/*
-function isButtonWithIcon(button) {
-    return button.childNodes.length >= 2 && button.childNodes[0].classList.contains("jsui-icon");
-}
-
-
-export function primaryButton(properties, ...children) {
-    let resultElement = button(null, ...children);
-    
-    //set the css; 
-    //if the first child is an icon, apply the appropriate left padding;
-    //if the last child is an icon, apply the appropriate right padding.
-    
-    let className = "jsui-primary-button";
-    
-    if (resultElement.childNodes.length >= 1) {
-        let children = resultElement.childNodes;
-        
+function fixCommonButtonIconPadding(element, ...children) {
+    if (children !== null && children.length > 0) {
         if (classListContains(children[0], "jsui-icon")) {
-            className += " jsui-primary-button-icon-left";
+            element.className += " jsui-common-button-icon-left";
         }
-        
         if (classListContains(children[children.length - 1], "jsui-icon")) {
-            className += " jsui-primary-button-icon-right";
+            element.className += " jsui-common-button-icon-right";
         }
     }
-    
-    resultElement.className = className;
-    
-    //set the given properties
+}
+
+
+export function filledButton(properties, ...children) {
+    let resultElement = button({classes: "jsui-button jsui-button-text jsui-common-button-dimensions jsui-common-button-border jsui-filled-button"});
+    resultElement.stateLayer = div({parent: resultElement, classes: "jsui-button-layer", style: {display: "none"}});     
+    resultElement.childrenLayer = div({parent: resultElement, classes: "jsui-button-layer jsui-button-layer-children jsui-common-button-layer-children"}, ...children);
+    fixCommonButtonIconPadding(resultElement.childrenLayer, ...children);
     applyProperties(resultElement, properties);
-    
     return resultElement;
 }
-*/

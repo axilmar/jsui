@@ -1,2 +1,14 @@
 :root {
+    --md-sys-color-primary: #6750A4;    
+    --md-sys-color-on-primary: #FFFFFF;    
+    --md-sys-typescale-label-large-font: "Roboto-Medium";
+    --md-sys-typescale-label-large-line-height: 20px;
+    --md-sys-typescale-label-large-size: 14px;
+    --md-sys-typescale-label-large-tracking: 1.25px;
+    --md-sys-typescale-label-large-weight: 500;    
+    --md-sys-color-on-surface: #1C1B1F;
+    --md-sys-elevation-level1: 3px;
+    --md-sys-color-on-primary: #FFFFFF;    
+    --jsui-disabled-background-color: rgba(28, 27, 31, 12%);
+    --jsui-disabled-text-color: rgba(28, 27, 31, 38%);
 }
