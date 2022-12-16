@@ -11,7 +11,7 @@
     --md-sys-color-on-primary: #FFFFFF;    
     --md-sys-state-hover-state-layer-opacity: 0.08;
     --md-sys-state-focus-state-layer-opacity: 0.12;
-    --md-sys-elevation-level1: 0px 2px 1px -1px;
+    --md-sys-elevation-level1: 0px 2px 1px -1px rgba(0, 0, 0, .2), 0px 1px 1px 0px rgba(0, 0, 0, .14), 0px 1px 3px 0px rgba(0, 0, 0, .12);
     --jsui-disabled-background-color: rgba(28, 27, 31, 12%);
     --jsui-disabled-text-color: rgba(28, 27, 31, 38%);
 }

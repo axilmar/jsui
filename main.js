@@ -5,6 +5,6 @@ import * as icons from "./src/icons.js";
 
 
 let btn1 = buttons.filledButton({parent: document.body, enabled: true},
-    //icons.icon({src: "/themes/material/icons/account.svg"}),
+    icons.icon({src: "/themes/material/icons/account.svg"}),
     "Enabled"
     );
