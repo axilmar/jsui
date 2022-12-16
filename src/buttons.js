@@ -17,7 +17,7 @@ function fixCommonButtonIconPadding(element, ...children) {
 export function filledButton(properties, ...children) {
     let resultElement = button({classes: "jsui-button jsui-common-button-dimensions jsui-common-button-corners jsui-filled-button"});
     resultElement.stateLayer = div({parent: resultElement, classes: "jsui-button-layer jsui-button-layer-state"});
-    resultElement.childrenLayer = div({parent: resultElement, classes: "jsui-button-layer jsui-button-layer-content jsui-common-button-layer-content jsui-button-text"}, ...children);
+    resultElement.contentLayer = div({parent: resultElement, classes: "jsui-button-layer jsui-button-layer-content jsui-common-button-layer-content jsui-button-text"}, ...children);
     fixCommonButtonIconPadding(resultElement.childrenLayer, ...children);
     applyProperties(resultElement, properties);
     return resultElement;
