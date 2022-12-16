@@ -4,11 +4,14 @@
     --md-sys-typescale-label-large-font: "Roboto-Medium";
     --md-sys-typescale-label-large-line-height: 20px;
     --md-sys-typescale-label-large-size: 14px;
-    --md-sys-typescale-label-large-tracking: 1.25px;
+    --md-sys-typescale-label-large-tracking: 0.1;
     --md-sys-typescale-label-large-weight: 500;    
     --md-sys-color-on-surface: #1C1B1F;
     --md-sys-elevation-level1: 3px;
     --md-sys-color-on-primary: #FFFFFF;    
+    --md-sys-state-hover-state-layer-opacity: 0.08;
+    --md-sys-state-focus-state-layer-opacity: 0.12;
+    --md-sys-elevation-level1: 0px 2px 1px -1px;
     --jsui-disabled-background-color: rgba(28, 27, 31, 12%);
     --jsui-disabled-text-color: rgba(28, 27, 31, 38%);
 }

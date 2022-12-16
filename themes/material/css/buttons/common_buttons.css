@@ -1,0 +1,25 @@
+.jsui-common-button-dimensions {
+    height: 40px;
+    padding: 0px;
+}
+  
+.jsui-common-button-corners {
+    border-top-left-radius: 32px 32px;
+    border-top-right-radius: 32px 32px;
+    border-bottom-left-radius: 32px 32px;
+    border-bottom-right-radius: 32px 32px;
+}
+  
+.jsui-common-button-layer-content .jsui-icon {
+    width: 18px;
+    height: 18px;    
+}
+
+.jsui-common-button-icon-left {
+    padding-left: 16px;
+}
+
+.jsui-common-button-icon-right {
+    padding-right: 16px;
+}
+

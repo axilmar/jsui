@@ -1,0 +1,68 @@
+.jsui-filled-button {
+    border-width: 0;    
+}
+ 
+/* ENABLED */
+
+.jsui-filled-button:enabled {
+    background-color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+}
+
+.jsui-filled-button:enabled .jsui-button-layer-state {
+    display: none;
+}
+
+.jsui-filled-button:enabled .jsui-icon {
+    background-color: var(--md-sys-color-on-primary);
+}
+
+/* DISABLED */
+
+.jsui-filled-button:disabled {
+    background-color: var(--jsui-disabled-background-color);
+    color: var(--jsui-disabled-text-color);
+}
+
+.jsui-filled-button:disabled .jsui-button-layer-state {
+    display: none;
+}
+
+.jsui-filled-button:disabled .jsui-icon {
+    background-color: var(--jsui-disabled-text-color);
+}
+
+/* HOVER */
+
+.jsui-filled-button:hover {
+    color: var(--md-sys-color-on-primary);
+    box-shadow: var(--md-sys-elevation-level1)
+}
+
+
+.jsui-filled-button:hover .jsui-button-layer-state {
+    display: block;
+    background-color: var(--md-sys-color-on-primary);
+    opacity: var(--md-sys-state-hover-state-layer-opacity);
+}
+
+.jsui-filled-button:hover .jsui-icon {
+    background-color: var(--md-sys-color-on-primary);
+}
+
+/* FOCUS */
+
+.jsui-filled-button:focus {
+    color: var(--md-sys-color-on-primary);
+}
+
+
+.jsui-filled-button:focus .jsui-button-layer-state {
+    display: block;
+    background-color: var(--md-sys-color-on-primary);
+    opacity: var(--md-sys-state-focus-state-layer-opacity);
+}
+
+.jsui-filled-button:focus .jsui-icon {
+    background-color: var(--md-sys-color-on-primary);
+}

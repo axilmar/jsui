@@ -1,6 +1,16 @@
 import "./init.js"
 
 
+function appendClasses(elementObject, value) {
+    if (elementObject.className.length > 0) {
+        elementObject.className += " " + value;
+    }
+    else {
+        elementObject.className = value;
+    }
+}
+
+
 export function applyProperties(elementObject, properties) {
     if (properties != null) {
         for(let key in properties) {
@@ -16,7 +26,7 @@ export function applyProperties(elementObject, properties) {
             }
             
             else if (key == "classes") {
-                elementObject.className += " " + value;
+                appendClasses(elementObject, value);
             }
             
             else {
