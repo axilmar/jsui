@@ -18,7 +18,8 @@
  }
  
  .jsui-button-layer-state {
-    border-width: 0;    
+    border-width: 0;
+    transition: opacity 0.3s;
 }
  
 .jsui-button-layer-content {

@@ -11,7 +11,7 @@
 }
 
 .jsui-filled-button:enabled .jsui-button-layer-state {
-    display: none;
+    opacity: 0;
 }
 
 .jsui-filled-button:enabled .jsui-icon {
@@ -27,7 +27,7 @@
 }
 
 .jsui-filled-button:disabled .jsui-button-layer-state {
-    display: none;
+    opacity: 0;
 }
 
 .jsui-filled-button:disabled .jsui-icon {
@@ -43,7 +43,6 @@
 
 
 .jsui-filled-button:enabled:hover .jsui-button-layer-state {
-    display: block;
     background-color: var(--md-sys-color-on-primary);
     opacity: var(--md-sys-state-hover-state-layer-opacity);
 }
@@ -62,7 +61,6 @@
 
 
 .jsui-filled-button:enabled:focus .jsui-button-layer-state {
-    display: block;
     background-color: var(--md-sys-color-on-primary);
     opacity: var(--md-sys-state-focus-state-layer-opacity);
 }
@@ -81,7 +79,6 @@
 
 
 .jsui-filled-button:enabled:active .jsui-button-layer-state {
-    display: block;
     background-color: var(--md-sys-color-on-primary);
     opacity: var(--md-sys-state-hover-state-layer-opacity);
 }
