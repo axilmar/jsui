@@ -216,6 +216,8 @@ function Element_onMouseEnter() { this.addState(State.HIGHLIGHTED); }
 function Element_onMouseLeave() { this.removeState(State.HIGHLIGHTED); }
 function Element_onFocusIn() { this.addState(State.ACTIVE); }
 function Element_onFocusOut() { this.removeState(State.ACTIVE); }
+function Element_onDragEnter() { this.addState(State.DRAGOVER); }
+function Element_onDragLeave() { this.removeState(State.DRAGOVER); }
 
 
 //updates the event listeners required for managing states
@@ -224,10 +226,12 @@ const updateStateEventListeners = (element) => {
     let focused = 0;
     let highlighted = 0;
     let active = 0;
+    let dragover = 0;
     for(const state in element.__styles) {
         focused |= state & State.FOCUSED;
         highlighted |= state & State.HIGHLIGHTED;
         active |= state & State.ACTIVE;
+        dragover |= state & State.DRAGOVER;
     }
 
     //setup handlers
@@ -254,6 +258,14 @@ const updateStateEventListeners = (element) => {
     else {
         element.removeEventListener('focusin', Element_onFocusIn);
         element.removeEventListener('focusout', Element_onFocusOut);
+    }
+    if (dragover) {
+        element.addEventListener('dragenter', Element_onDragEnter);
+        element.addEventListener('dragleave', Element_onDragLeave);
+    }
+    else {
+        element.removeEventListener('dragenter', Element_onDragEnter);
+        element.removeEventListener('dragleave', Element_onDragLeave);
     }
 }
 
@@ -422,7 +434,8 @@ export const State = Object.freeze({
     CHECKED     : 1 << 5,
     ACTIVE      : 1 << 6,
     ERROR       : 1 << 7,
-    USER        : 1 << 8
+    DRAGOVER    : 1 << 8,
+    USER        : 1 << 9
 });
 
 
