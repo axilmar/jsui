@@ -43,6 +43,12 @@ const InputForm = (name, left, top, text = '') => {
                     },
                     [State.ENABLED + State.FOCUSED]: {
                         backgroundColor: 'yellow'
+                    },
+                    [State.ENABLED + State.DRAG_ACCEPTED]: {
+                        backgroundColor: 'lightgreen'
+                    },
+                    [State.ENABLED + State.DRAG_DENIED]: {
+                        backgroundColor: 'red'
                     }
                 }}
             ),
@@ -99,6 +105,7 @@ document.body.append(tempDiv);
 
 const inputForm2 = InputForm('inputForm2', '20px', '10px', 'form2');
 tempDiv.append(inputForm2);
+inputForm2.okButton.draggable = true;
 
 //document.body.style.display = 'flex';
 //document.body.style.gap = '12px';

@@ -1,4 +1,4 @@
-import './init.js';
+import { isFirefox } from './init.js';
 
 /******************************************************************************************************************************
     PRIVATE
@@ -13,6 +13,15 @@ const getStateArray = (state) => {
 }
 
 
+//add child as property to parent
+const addChildAsParentProperty = (parent, child) => {
+    const name = child.getAttribute('name');
+    if (name !== null) {
+        parent[name] = child;
+    }
+}
+
+
 //when a child is added, its effective state is updated; also, the parent gets the children as properties;
 //when a child is removed, the parent no longer has the relevant children as properties
 const addChildObserverCallback = (mutations) => {
@@ -22,10 +31,7 @@ const addChildObserverCallback = (mutations) => {
             mutation.addedNodes.forEach((child) => {
                 if (child.nodeType === Node.ELEMENT_NODE) {
                     updateEffectiveState(child);
-                    const name = child.getAttribute('name');
-                    if (name !== null) {
-                        mutation.target[name] = child;
-                    }
+                    addChildAsParentProperty(mutation.target, child);
                 }
             });
 
@@ -45,7 +51,7 @@ const addChildObserverCallback = (mutations) => {
 
 //mutation observer used to monitor child insertions in order to setup their effective state
 const addChildObserver = new MutationObserver(addChildObserverCallback);
-addChildObserver.observe(document.body, { subTree: true, childList: true });
+addChildObserver.observe(document.body, { subtree: true, childList: true });
 
 
 //returns the parent state of an element
@@ -129,9 +135,9 @@ const updateEffectiveState = (element) => {
 
 //returns the full name of the element
 const getElementFullName = (element) => {
-    let fullName = element.name;
-    for(element = element.parentElement; element !== document.body; element = element.parentElement) {
-        fullName = element.name + '.' + fullName;
+    let fullName = element.getAttribute('name');
+    for(element = element.parentElement; element !== document.body && element !== null; element = element.parentElement) {
+        fullName = element.getAttribute('name') + '.' + fullName;
     }
     return fullName;
 }
@@ -206,7 +212,32 @@ const defineProperties = (element) => {
         enumerable: true,
         get: () => getElementFullName(element)
     })
+
+    //name of the element
+    Object.defineProperty(element, 'name', {
+        configurable: false,
+        enumerable: true,
+        get: () => element.getAttribute('name'),
+        set: (name) => element.setAttribute('name', name)
+    })
 }    
+
+
+//activates the appropriate drag style according to the types of the data being transferred
+const activateDragStyle = (event) => {
+    const element = event.target;
+    if (element.acceptedDroppedTypes) {
+        for(const item of event.dataTransfer.items) {
+            for(const acceptedDroppedType of element.acceptedDroppedTypes) {
+                if (item.type.match(acceptedDroppedType)) {
+                    element.addState(State.DRAG_ACCEPTED);
+                    return;        
+                }
+            }
+        }
+    }
+    element.addState(State.DRAG_DENIED);
+}
 
 
 //event handlers that add/remove the appropriate states, based on event type
@@ -216,8 +247,10 @@ function Element_onMouseEnter() { this.addState(State.HIGHLIGHTED); }
 function Element_onMouseLeave() { this.removeState(State.HIGHLIGHTED); }
 function Element_onFocusIn() { this.addState(State.ACTIVE); }
 function Element_onFocusOut() { this.removeState(State.ACTIVE); }
-function Element_onDragEnter() { this.addState(State.DRAGOVER); }
-function Element_onDragLeave() { this.removeState(State.DRAGOVER); }
+function Element_onDragEnter(e) { activateDragStyle(e); }
+function Element_onDragOver(e) { activateDragStyle(e); }
+function Element_onDragLeave() { this.removeState(State.DRAG_ACCEPTED | State.DRAG_DENIED); }
+function Element_onDrop() { this.removeState(State.DRAG_ACCEPTED | State.DRAG_DENIED); }
 
 
 //updates the event listeners required for managing states
@@ -231,7 +264,7 @@ const updateStateEventListeners = (element) => {
         focused |= state & State.FOCUSED;
         highlighted |= state & State.HIGHLIGHTED;
         active |= state & State.ACTIVE;
-        dragover |= state & State.DRAGOVER;
+        dragover |= state & (State.DRAG_ACCEPTED | State.DRAG_DENIED);
     }
 
     //setup handlers
@@ -261,11 +294,18 @@ const updateStateEventListeners = (element) => {
     }
     if (dragover) {
         element.addEventListener('dragenter', Element_onDragEnter);
+        //firefox bug: when mouse enters text node under input, input receives dragleave
+        if (isFirefox) {
+            element.addEventListener('dragover', Element_onDragOver); 
+        }
         element.addEventListener('dragleave', Element_onDragLeave);
+        element.addEventListener('drop', Element_onDrop);
     }
     else {
         element.removeEventListener('dragenter', Element_onDragEnter);
+        element.removeEventListener('dragover', Element_onDragOver);
         element.removeEventListener('dragleave', Element_onDragLeave);
+        element.removeEventListener('drop', Element_onDrop);
     }
 }
 
@@ -334,9 +374,15 @@ const defineMethods = (element) => {
 
 //sets the defaults for an element
 const setDefaults = (element) => {
+    //layout-related functionality
     element.style.boxSizing = 'border-box';
     element.style.margin = '0';
     element.style.padding = '0';
+
+    //drag-n-drop-related functionality
+    if (element.tagName === 'INPUT') {
+        element.acceptedDroppedTypes = ["text/plain"];
+    }
 }
 
 
@@ -346,6 +392,12 @@ const setProperties = (element, properties) => {
         for(const propName in properties) {
             if (propName === 'style') {
                 Object.assign(Element.style, properties[propName]);
+            }
+            else if (propName === 'name') {
+                element.setAttribute('name', properties[propName]);
+            }
+            else if (propName === 'acceptedDroppedTypes') {
+                element.acceptedDroppedTypes = properties[propName];
             }
             else {
                 element[propName] = properties[propName];
@@ -414,7 +466,10 @@ const addChildren = (element, children) => {
     if (children) {
         for(const child of children) {
             element.append(child);
-        }
+            if (child.nodeType === Node.ELEMENT_NODE) {
+                addChildAsParentProperty(element, child);
+            }
+}
     }
 }
 
@@ -425,17 +480,18 @@ const addChildren = (element, children) => {
 
 
 export const State = Object.freeze({
-    DISABLED    : 0,
-    ENABLED     : 1 << 0,
-    FOCUSED     : 1 << 1,
-    HIGHLIGHTED : 1 << 2,
-    SELECTED    : 1 << 3,
-    PRESSED     : 1 << 4,
-    CHECKED     : 1 << 5,
-    ACTIVE      : 1 << 6,
-    ERROR       : 1 << 7,
-    DRAGOVER    : 1 << 8,
-    USER        : 1 << 9
+    DISABLED      : 0,
+    ENABLED       : 1 << 0,
+    FOCUSED       : 1 << 1,
+    HIGHLIGHTED   : 1 << 2,
+    SELECTED      : 1 << 3,
+    PRESSED       : 1 << 4,
+    CHECKED       : 1 << 5,
+    ACTIVE        : 1 << 6,
+    ERROR         : 1 << 7,
+    DRAG_ACCEPTED : 1 << 8,
+    DRAG_DENIED   : 1 << 9,
+    USER          : 1 << 10
 });
 
 
