@@ -22,7 +22,7 @@ const doChildAdditionSideEffects = (parent, child) => {
     }
 
     //inherit the theme
-    if (!child.theme && parent.theme) {
+    if (parent.theme) {
         child.theme = parent.theme;
     }
 }
@@ -83,13 +83,22 @@ const getParentState = (element) => {
 
 //computes the effective state of an element
 const computeEffectiveState = (element, parentEffectiveState) => {
+    //handle enabled/disabled
     if ((element.__ownState & State.ENABLED) === 0 || (parentEffectiveState & State.ENABLED) === 0) {
-        //element.setAttribute('disabled', '');
+        element.setAttribute('disabled', '');
         element.__effectiveState = 0;
     }
     else {
         element.removeAttribute('disabled');
         element.__effectiveState = element.__ownState | parentEffectiveState;
+    }
+
+    //handle checked
+    if ((element.__ownState & State.CHECKED) !== 0 || (parentEffectiveState & State.CHECKED) !== 0) {
+        element.setAttribute('checked', '');
+    }
+    else {        
+        element.removeAttribute('checked');
     }
 }
 
@@ -569,22 +578,98 @@ const applyDecoration = (element, {properties, style, styles, events}) => {
  ******************************************************************************************************************************/
 
 
+/**
+ * The default element states.
+ * It defines bitfield values which can be combined by + or | operation.
+ * The states can be used to define styles per states.
+ * The states are inherited by descentants: when a state is activated on a parent,
+ * it also gets activated on children.
+ */
 export const State = Object.freeze({
-    DISABLED      : 0,
-    ENABLED       : 1 << 0,
-    FOCUSED       : 1 << 1,
-    HIGHLIGHTED   : 1 << 2,
-    SELECTED      : 1 << 3,
-    PRESSED       : 1 << 4,
-    CHECKED       : 1 << 5,
-    ACTIVE        : 1 << 6,
-    ERROR         : 1 << 7,
-    DRAG_ACCEPTED : 1 << 8,
-    DRAG_DENIED   : 1 << 9,
-    USER          : 1 << 10
+    /**
+     * The Disabled state.
+     * This is the only state that cannot be combined with any other state,
+     * since its value is 0.
+     * It cannot be set directly, it can only be set when the enabled state is removed.
+     */
+    DISABLED: 0,
+
+    /**
+     * The Enabled state.
+     * When set, the element's disabled attribute is set to false and vice versa.
+     */
+    ENABLED: 1 << 0,
+
+    /**
+     * The Focused state.
+     * Activated when an element has the input focus.
+     * When a style for this state is defined, the element automatically gets focus/blur events that set this state.
+     */
+    FOCUSED: 1 << 1,
+
+    /**
+     * THe Highlighted state.
+     * Activated when the mouse is on top of an element, including its descentant elements.
+     * Also known as 'hover'.
+     * When a style for this state is defined, the element automatically gets mouseenter/mouseleave events that set this state.
+     */
+    HIGHLIGHTED: 1 << 2,
+
+    /**
+     * The Selected state.
+     */
+    SELECTED: 1 << 3,
+
+    /**
+     * The Pressed state.
+     */
+    PRESSED: 1 << 4,
+
+    /**
+     * The Checked state.
+     * When set, the checked attribute is set, otherwise it is reset.
+     */
+    CHECKED: 1 << 5,
+
+    /**
+     * The active state.
+     * An element is active if it contains an element that has the input focus,
+     * or it has the input focus.
+     * When a style for this state is defined, the element automatically gets focusin/focusout events that set this state.
+     */
+    ACTIVE : 1 << 6,
+
+    /**
+     * The error state.
+     * It is used to signal to the user that the input is erroneous.
+     */
+    ERROR: 1 << 7,
+
+    /**
+     * The state when a drag is accepted.
+     * A drag is accepted when one of the types specified in dataTransfer is found in the acceptedDroppedTypes list of an element.
+     */
+    DRAG_ACCEPTED: 1 << 8,
+
+    /**
+     * The state when a drag is denied.
+     * A drag is denied the acceptedDroppedTypes list of an element does not contain any of the data types
+     * specified in dataTransfer.
+     */
+    DRAG_DENIED: 1 << 9,
+
+    /**
+     * First user-available state.
+     */
+    USER: 1 << 10
 });
 
 
+/**
+ * Event fired when the state of an element actually changes.
+ * The event gets a property 'state', which reflects the final state of an element,
+ * as affected by its own state and by the state of its ancestors.
+ */
 export class StateChangedEvent extends Event {
     constructor(state) {
         super('stateChanged');
@@ -593,6 +678,148 @@ export class StateChangedEvent extends Event {
 }
 
 
+/**
+ * Creates an element.
+ * 
+ * Example:
+ * 
+ *  Element('button', {
+ *      properties: {
+ *          name: 'foo',
+ *          className: 'bar',
+ *      },
+ *      style: {
+ *          color: 'blue',
+ *          backgroundColor: 'red',
+ *      },
+ *      styles: {
+ *          [State.DISABLED]: {
+ *              backgroundColor: 'grey',
+ *          },
+ *          [State.ENABLED]: {
+ *              backgroundColor: 'white',
+ *          }
+ *          [State.ENABLED + State.HIGHLIGHTED]: {
+ *              backgroundColor: 'cyan',
+ *          }
+ *      },
+ *      events: {
+ *          'click': (event) => console.log("Element was clicked"),
+ *          'mousedown': {
+ *              listener: (event) => console.log("Element was pressed"),
+ *              options: {},
+ *          },
+ *          'mouseup': {
+ *              listener: (event) => console.log("Element not pressed"),
+ *              useCapture: true,
+ *          }
+ *      }},
+ *      "This is content"
+ *      )
+ * 
+ * The Element function can be used to specify:
+ * 
+ *  -the element properties; these have the same names as the element properties and take the same value.
+ *   Additional properties are:
+ *      -state: returns or sets the own state of the element.
+ *      -enabled: sets the 'disabled' attribute of the element.
+ *      -name: sets the 'name' attribute of the element.
+ *      -fullName: read-only property that returns the full name of the element, up to document.body.
+ *      -theme: retrieves or sets the current object theme.
+ *      -acceptedDroppedTypes: array of types the element accepts through drag-n-drop.
+ * 
+ *  -the element style; the style object can include any property of CSSStyleDeclaration.
+ * 
+ *  -the element styles; they are a map of states to style objects.
+ *      This allows the specification of styles for a specific state.
+ * 
+ *  -the event handlers; these can be functions or objects with the following fields:
+ *      {
+ *          listener: function
+ *          options: same options as defined in function 'addEventListener'; optional.
+ *          useCapture: useCapture flag, as defined in function 'addEventListener'; optional.
+ *      }
+ * 
+ * Furthermore, an Element gets several methods which are used to enhance an html element with increased functionality:
+ * 
+ *      -addState(State):
+ *          Adds a state to an object. For example, in order to make an element selected, the following code is used:
+ *              element.addState(State.SELECTED);
+ *          The state parameter is a bitfield that can accept multiple states. For example:
+ *              element.addState(State.SELECTED | State.HIGHLIGHTED);
+ *          The element's style is automatically modified to reflect the new state,
+ *          provided that a style is defined for that state.
+ * 
+ *      -removeState(State):
+ *          Removes states from an object. Example:
+ *              element.removeState(State.SELECTED | State.HIGHLIGHTED);
+ *          The element's style is automatically modified to reflect the new state,
+ *          provided that a style is defined for that state.
+ * 
+ *      -modifyState(stateToAdd, stateToRemove):
+ *          Adds and removes states. Example:
+ *              element.modifyState(State.HIGHLIGHTED, State.PRESSED);
+ *          The element's style is automatically modified to reflect the new state,
+ *          provided that a style is defined for that state.
+ * 
+ *      -getStyle(state):
+ *          Returns a copy of the style object for the given state or undefined if there is no style object
+ *          associated with that state.
+ *          Example:
+ *              const { backgroundColor } = element.getState(State.ENABLED | State.ACTIVE);
+ *
+ *      -setStyle(state, style):
+ *          Replaces the style of a given state with a copy of the given style object.
+ *          If the element does not have a style for the given state, then it is set.
+ *          The element's style is automatically modified to reflect the current state,
+ *          if the style for that state is being modified.
+ *          Example:
+ *              element.setStyle(State.ENABLED | State.ACTIVE, { backgroundColor: 'pink' });
+ * 
+ *      -modifyStyle(state, style):
+ *          Modifies an existing style or sets the style for a state, if the given state 
+ *          is not associated with a given style. 
+ *          Example:
+ *              element.modifyStyle(State.ENABLED | State.ACTIVE, { backgroundColor: 'pink' });
+ * 
+ *  Element states, where are used as parameters, can also be arrays of states. For example:
+ *      element.setStyle([State.ENABLED | State.HIGHLIGHTED, State.ENABLED | State.FOCUSED], {...});
+ *      Element('div', {styles: { [[State.ENABLED | State.HIGHLIGHTED, State.ENABLED | State.FOCUSED]] : {...}}})
+ * 
+ *  When an element gets a style for a state that requires event handlers in order to be activated,
+ *  then these event handlers are automatically added. The following table shows which states
+ *  add event handlers to elements:
+ *      State.FOCUSED: focus/blur.
+ *      State.HIGHLIGHTED: mouseenter/mouseleave.
+ *      State.ACTIVE: focusin/focusout.
+ *      State.DRAG_ACCEPTED, State.DRAG_DENIED: dragenter/dragover(*)/dragleave/drop.
+ *      (*) The dragover handler is activated only on Firefox, because Firefox currently (as of Feb 2024)
+ *      has the following bug: when the mouse cursor enters the text node of an input, the input gets a dragleave event.
+ *  The above event handlers are automatically removed when there is no style associated with one of the above states.
+ * 
+ *  Elements that are children become properties of their parents, if they have a name.
+ *  For example, if an element is named 'container' and a button inside it is named 'okButton',
+ *  then the expression 'container.okButton' returns the button. Example:
+ *      const parent = Element('div', { properties: { name: 'container'}}, Element('button', { properties: {name: 'okButton'}}));
+ *      const button = parent.okButton;
+ *  This is very useful for complex elements with a lot of descentants, because it allows easy access of children components
+ *  via their name. 
+ * 
+ *  Elements have a 'theme' property which allows an element to style itself from a theme.
+ *  Themes are inherited by children: when a theme is set on a parent element, the children
+ *  also get the theme.
+ *  In order to set a child's theme, first set the parent's theme and then the child's theme.
+ * 
+ * @param {string} tagName tag name of the element to pass to document.createElement.
+ * @param {*} properties object with element properties; the element is initialized from these properties; optional.
+ * @param {*} style object with element style properties; the element style is initialized from these properties; optional.
+ * @param {*} styles object with states to element style properties object; these are the visual states of the element that 
+ *  are activated when the element gets the relevant state.
+ * @param {*} events object with event names to event handlers or to objects of the form {listener, options | useCapture}.
+ * @param {boolean} debug optional flag that invokes the debugger, when set; useful for debugging of element creation.
+ * @param {...any} children children components.
+ * @returns the element.
+ */
 export const Element = (tagName, {properties, style, styles, events, debug}, ...children) => {
     if (debug) {
         debugger;
