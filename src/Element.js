@@ -13,17 +13,25 @@ const getStateArray = (state) => {
 }
 
 
-//add child as property to parent
-const addChildAsParentProperty = (parent, child) => {
+//add child side effects
+const doChildAdditionSideEffects = (parent, child) => {
+    //set the child as property of parent, based on name
     const name = child.getAttribute('name');
     if (name !== null) {
         parent[name] = child;
+    }
+
+    //inherit the theme
+    if (!child.theme && parent.theme) {
+        child.theme = parent.theme;
     }
 }
 
 
 //when a child is added, its effective state is updated; also, the parent gets the children as properties;
-//when a child is removed, the parent no longer has the relevant children as properties
+//when a child is removed, the parent no longer has the relevant children as properties;
+//also, when a child is added and does not have a theme, and the parent has a theme,
+//then the child gets the parent theme.
 const addChildObserverCallback = (mutations) => {
     for(const mutation of mutations) {
         if (mutation.type === 'childList') {
@@ -31,7 +39,7 @@ const addChildObserverCallback = (mutations) => {
             mutation.addedNodes.forEach((child) => {
                 if (child.nodeType === Node.ELEMENT_NODE) {
                     updateEffectiveState(child);
-                    addChildAsParentProperty(mutation.target, child);
+                    doChildAdditionSideEffects(mutation.target, child);
                 }
             });
 
@@ -135,9 +143,13 @@ const updateEffectiveState = (element) => {
 
 //returns the full name of the element
 const getElementFullName = (element) => {
-    let fullName = element.getAttribute('name');
-    for(element = element.parentElement; element !== document.body && element !== null; element = element.parentElement) {
-        fullName = element.getAttribute('name') + '.' + fullName;
+    let fullName = '';
+    while (true) {
+        fullName = element.getAttribute('name') + (fullName.length > 0 ? ('.' + fullName) : '');
+        element = element.parentElement;
+        if (element === document.body.parentElement || element === null) {
+            break;
+        }
     }
     return fullName;
 }
@@ -219,6 +231,41 @@ const defineProperties = (element) => {
         enumerable: true,
         get: () => element.getAttribute('name'),
         set: (name) => element.setAttribute('name', name)
+    })
+
+    //theme storage
+    Object.defineProperty(element, '__theme', {
+        configurable: false,
+        enumerable: false,
+        value: undefined,
+        writable: true
+    })
+
+    //theme property
+    Object.defineProperty(element, 'theme', {
+        configurable: true,
+        enumerable: true,
+        get: () => element.__theme,
+        set: (theme) => {
+            //set theme
+            if (theme !== undefined && theme !== null) {
+                element.__theme = theme;
+                theme.applyToElement(element);
+            }
+
+            //remove theme
+            else {
+                if (element.__theme) {
+                    element.__theme.undecorateElement(element);
+                }
+                element.__theme = undefined;
+            }
+
+            //apply theme to children
+            for(let child = element.firstElementChild; child !== null; child = child.nextElementSibling) {
+                child.theme = theme;
+            }
+        }
     })
 }    
 
@@ -378,6 +425,11 @@ const defineMethods = (element) => {
 
     //sets the element events
     element.setEvents = (events) => setEvents(element, events);
+
+    //apply decoration to element
+    element.applyDecoration = (decoration) => {
+        applyDecoration(element, decoration);
+    }
 }
 
 
@@ -494,10 +546,21 @@ const addChildren = (element, children) => {
         for(const child of children) {
             element.append(child);
             if (child.nodeType === Node.ELEMENT_NODE) {
-                addChildAsParentProperty(element, child);
+                doChildAdditionSideEffects(element, child);
             }
-}
+        }
     }
+}
+
+
+//applies properties, styles and events to an element.
+const applyDecoration = (element, {properties, style, styles, events}) => {
+    Object.assign(element.style, style);
+    setStyles(element, styles);
+    updateStyleFromEffectiveState(element);
+    updateStateEventListeners(element);
+    setProperties(element, properties);
+    setEvents(element, events);
 }
 
 
@@ -538,12 +601,7 @@ export const Element = (tagName, {properties, style, styles, events, debug}, ...
     defineProperties(element);
     defineMethods(element);
     setDefaults(element);
-    Object.assign(element.style, style);
-    setStyles(element, styles);
-    updateStyleFromEffectiveState(element);
-    updateStateEventListeners(element);
-    setProperties(element, properties);
-    setEvents(element, events);
+    applyDecoration(element, {properties, style, styles, events});
     addChildren(element, children);
     return element;
 }

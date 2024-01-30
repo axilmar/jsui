@@ -1,11 +1,34 @@
 import { State, Element } from './src/Element.js';
+import { Theme } from './src/Theme.js';
+
+const myTheme = Theme();
+myTheme.decorations['Element'] = {
+    style: {
+        backgroundColor: 'orange'
+    }
+}
+myTheme.decorations['document.body'] = {
+    style: {
+        backgroundColor: 'lightblue'
+    }
+}
+myTheme.decorations['Button'] = {
+    styles: {
+        [[State.ENABLED, State.ENABLED + State.ACTIVE, State.ENABLED + State.FOCUSED, State.ENABLED + State.ACTIVE + State.FOCUSED]]: {
+            backgroundColor: 'purple'
+        }
+    }
+}
+
+document.body.theme = myTheme;
 
 const InputForm = (name, left, top, text = '') => {
     return ( 
         Element('div', {
             properties: {
                 name: name,
-                className: 'div'
+                className: 'div',
+                //theme: myTheme,
             },
             style: {
                 //position: 'relative',
@@ -66,12 +89,12 @@ const InputForm = (name, left, top, text = '') => {
                     height: '30px'
                 },
                 styles: {
-                    [[State.ENABLED, 
+                    /*[[State.ENABLED,
                       State.ENABLED + State.ACTIVE,
                       State.ENABLED + State.FOCUSED, 
                       State.ENABLED + State.ACTIVE + State.FOCUSED]]: {
                         backgroundColor: 'lightgray'
-                    },
+                    },*/
                     [[State.ENABLED + State.HIGHLIGHTED, 
                       State.ENABLED + State.ACTIVE + State.HIGHLIGHTED,
                       State.ENABLED + State.FOCUSED + State.HIGHLIGHTED, 
@@ -112,3 +135,4 @@ inputForm2.okButton.draggable = true;
 
 //document.body.style.display = 'flex';
 //document.body.style.gap = '12px';
+
