@@ -22,5 +22,5 @@ document.body.style.height = '100%';
 document.body.setAttribute("name", "body");
 
 //firefox upto and including version 122.0, 64-bit, has a bug:
-//when mouse enters text node under input, input receives dragleave.
+//when mouse enters text node under input, the input receives dragleave.
 export const isFirefox = navigator.userAgent.includes("Firefox");

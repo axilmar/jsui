@@ -4,7 +4,8 @@ const InputForm = (name, left, top, text = '') => {
     return ( 
         Element('div', {
             properties: {
-                name: name
+                name: name,
+                className: 'div'
             },
             style: {
                 //position: 'relative',
@@ -27,7 +28,8 @@ const InputForm = (name, left, top, text = '') => {
             Element('input', {
                 properties: {
                     name: 'Input',
-                    value: text
+                    value: text,
+                    className: 'input'
                 },
                 style: {
                     width: '50px',
@@ -56,7 +58,8 @@ const InputForm = (name, left, top, text = '') => {
             //ok button
             Element('button', {
                 properties: {
-                    name: 'okButton'
+                    name: 'okButton',
+                    className: 'Button okButton'
                 },
                 style: {
                     width: '30px',

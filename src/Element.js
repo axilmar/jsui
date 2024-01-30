@@ -369,11 +369,23 @@ const defineMethods = (element) => {
             element.setStyle(state, Object.assign({}, element.__styles[state], style));
         }
     }
+
+    //sets the element properties
+    element.setProperties = (properties) => setProperties(element, properties);
+
+    //sets the element styles
+    element.setStyles = (styles) => setStyles(element, styles);
+
+    //sets the element events
+    element.setEvents = (events) => setEvents(element, events);
 }
 
 
 //sets the defaults for an element
 const setDefaults = (element) => {
+    //properties
+    element.className = 'Element';
+
     //layout-related functionality
     element.style.boxSizing = 'border-box';
     element.style.margin = '0';
@@ -383,6 +395,18 @@ const setDefaults = (element) => {
     if (element.tagName === 'INPUT') {
         element.acceptedDroppedTypes = ["text/plain"];
     }
+}
+
+
+//adds a class name
+const appendClassName = (className, addition) => {
+    if (className === undefined || className === null || className.length === 0) {
+        return addition;
+    }
+    if (addition === undefined || addition === null || addition.length === 0) {
+        return className;
+    }
+    return className + ' ' + addition;
 }
 
 
@@ -398,6 +422,9 @@ const setProperties = (element, properties) => {
             }
             else if (propName === 'acceptedDroppedTypes') {
                 element.acceptedDroppedTypes = properties[propName];
+            }
+            else if (propName === 'className') {
+                element.className = appendClassName(element.className, properties[propName]);
             }
             else {
                 element[propName] = properties[propName];
@@ -503,7 +530,7 @@ export class StateChangedEvent extends Event {
 }
 
 
-export const Element = (tagName, {debug, properties, style, styles, events}, ...children) => {
+export const Element = (tagName, {properties, style, styles, events, debug}, ...children) => {
     if (debug) {
         debugger;
     }
