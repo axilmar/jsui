@@ -69,10 +69,10 @@ const InputForm = (name, left, top, text = '') => {
                     [State.ENABLED + State.FOCUSED]: {
                         backgroundColor: 'yellow'
                     },
-                    [State.ENABLED + State.DRAG_ACCEPTED]: {
+                    [[State.ENABLED + State.DRAG_ACCEPTED, State.ENABLED + State.DRAG_ACCEPTED + State.ACTIVE]]: {
                         backgroundColor: 'lightgreen'
                     },
-                    [State.ENABLED + State.DRAG_DENIED]: {
+                    [[State.ENABLED + State.DRAG_DENIED, State.ENABLED + State.DRAG_DENIED + State.ACTIVE]]: {
                         backgroundColor: 'red'
                     }
                 }}
