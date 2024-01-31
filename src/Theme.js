@@ -214,9 +214,30 @@ export const Theme = () => {
     //to effectively remove all styling;
     //it also removes all descentants that have the theme decoration property.
     theme.undecorationFunctions['Element'] = (element) => {
+        //create temporary element to get the style of in order to reset the style to defaults
         const tempElement = document.createElement(element.tagName);
         Object.assign(element.style, tempElement.style);
+
+        //remove all decorative elements
         removeThemeDecorativeElements(element);
+
+        //remove all the things defined in decorations
+        element.classList.forEach((className) => {
+            const decoration = theme.decorations[className];
+            if (decoration && decoration !== null) {
+                    if (decoration.events && decoration.events !== null) {
+                        for(const eventName in events) {
+                            const event = decoration.events[eventName];
+                            if (event.listener) {
+                                element.removeEventListener(eventName, event.listener, event.options || event.useCapture);
+                            }
+                            else {
+                                element.removeEventListener(eventName, event);
+                            }
+                        }
+                    }
+                }
+            });
     }
 
     //invokes the decoration functions for each class.

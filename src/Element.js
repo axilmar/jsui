@@ -524,7 +524,7 @@ const setStateStyle = (element, state, styles) => {
 //are added on focus/mouseenter/focusin and removed on blur/mouseleave/focusout events;
 //the state can be an array, which is expanded to multiple states.
 const setStyles = (element, styles) => {
-    if (styles) {
+    if (styles && styles !== null) {
         for(const state in styles) {
             setStateStyle(element, state, styles);
         }
@@ -535,7 +535,7 @@ const setStyles = (element, styles) => {
 
 //adds event listeners to the element; events can be { listener, options || useCapture } objects or functions.
 const setEvents = (element, events) => {
-    if (events) {
+    if (events && events !== null) {
         for(const eventName in events) {
             const event = events[eventName];
             if (event.listener) {
