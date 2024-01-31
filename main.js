@@ -66,14 +66,21 @@ const InputForm = (name, left, top, text = '') => {
                     [State.ENABLED + State.ACTIVE]: {
                         backgroundColor: 'white'
                     },
-                    [State.ENABLED + State.FOCUSED]: {
+                    [[State.ENABLED + State.FOCUSED,
+                      State.ENABLED + State.FOCUSED + State.ACTIVE]]: {
                         backgroundColor: 'yellow'
                     },
-                    [[State.ENABLED + State.DRAG_ACCEPTED, State.ENABLED + State.DRAG_ACCEPTED + State.ACTIVE, State.ENABLED + State.DRAG_ACCEPTED + State.FOCUSED]]: {
+                    [[State.ENABLED + State.DRAG_ACCEPTED, 
+                      State.ENABLED + State.ACTIVE + State.DRAG_ACCEPTED,
+                      State.ENABLED + State.FOCUSED + State.DRAG_ACCEPTED, 
+                      State.ENABLED + State.ACTIVE + State.FOCUSED + State.DRAG_ACCEPTED]]: {
                         backgroundColor: 'lightgreen'
                     },
-                    [[State.ENABLED + State.DRAG_DENIED, State.ENABLED + State.DRAG_DENIED + State.ACTIVE]]: {
-                        backgroundColor: 'red'
+                    [[State.ENABLED + State.DRAG_DENIED, 
+                      State.ENABLED + State.ACTIVE + State.DRAG_DENIED,
+                      State.ENABLED + State.FOCUSED + State.DRAG_DENIED, 
+                      State.ENABLED + State.ACTIVE + State.FOCUSED + State.DRAG_DENIED]]: {
+                            backgroundColor: 'red'
                     }
                 }}
             ),

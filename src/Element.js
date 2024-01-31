@@ -305,6 +305,7 @@ function Element_onMouseEnter() { this.addState(State.HIGHLIGHTED); }
 function Element_onMouseLeave() { this.removeState(State.HIGHLIGHTED); }
 function Element_onFocusIn() { this.addState(State.ACTIVE); }
 function Element_onFocusOut() { this.removeState(State.ACTIVE); }
+function Element_onDragStart(e) { activateDragStyle(e); }
 function Element_onDragEnter(e) { activateDragStyle(e); }
 function Element_onDragOver(e) { activateDragStyle(e); }
 function Element_onDragLeave() { this.removeState(State.DRAG_ACCEPTED | State.DRAG_DENIED); }
@@ -354,6 +355,7 @@ const updateStateEventListeners = (element) => {
         element.removeEventListener('focusout', Element_onFocusOut);
     }
     if (dragover) {
+        element.addEventListener('dragstart', Element_onDragStart);
         element.addEventListener('dragenter', Element_onDragEnter);
         //firefox bug: when mouse enters text node under input, input receives dragleave
         if (isFirefox) {
@@ -363,6 +365,7 @@ const updateStateEventListeners = (element) => {
         element.addEventListener('drop', Element_onDrop);
     }
     else {
+        element.removeEventListener('dragstart', Element_onDragStart);
         element.removeEventListener('dragenter', Element_onDragEnter);
         element.removeEventListener('dragover', Element_onDragOver);
         element.removeEventListener('dragleave', Element_onDragLeave);
