@@ -799,6 +799,22 @@ export class StateChangedEvent extends Event {
  *          Example:
  *              element.modifyStyle(State.ENABLED | State.ACTIVE, { backgroundColor: 'pink' });
  * 
+ *      -addEventListener(eventName, eventFunction, options):
+ *          Invokes the prototype method with the given parameters.
+ *          While the prototype does not return anything, this returns the following object:
+ *          {
+ *              event: eventName,
+ *              listener: eventFunction,
+ *              options: options
+ *          }
+ *          The result can be passed to removeEventListener to remove the exact event.
+ * 
+ *      -removeEventListener(eventName, eventFunction, options):
+ *          if the eventName contains a .listener member,
+ *          then the prototype function is invoked with arguments: eventName.event, eventName.listener, eventName.options.
+ *          Otherwise, the given arguments are used.
+ *          This allows the removal of the exact same event that addEventListener created.
+ * 
  *  Element states, where are used as parameters, can also be arrays of states. For example:
  *      element.setStyle([State.ENABLED | State.HIGHLIGHTED, State.ENABLED | State.FOCUSED], {...});
  *      Element('div', {styles: { [[State.ENABLED | State.HIGHLIGHTED, State.ENABLED | State.FOCUSED]] : {...}}})
