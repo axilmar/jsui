@@ -211,16 +211,10 @@ export const Theme = () => {
         });
     }
 
-    //add the default undecoration function for the element;
-    //it creates an element of the same tag name with the given element,
-    //then copies its style to the given element,
-    //to effectively remove all styling;
-    //it also removes all descentants that have the theme decoration property.
+    //add the default undecoration function for the element, which does the following:
+    //1) it removes all the decoration elements.
+    //2) It removes all event listeners setup by the theme.
     theme.undecorationFunctions['Element'] = (element) => {
-        //create temporary element to get the style of in order to reset the style to defaults
-        const tempElement = document.createElement(element.tagName);
-        Object.assign(element.style, tempElement.style);
-
         //remove all decorative elements
         removeThemeDecorativeElements(element);
 
@@ -263,15 +257,5 @@ export const Theme = () => {
         });
     }
 
-    //applies this theme to the given element; 
-    //first, it undecorates the element from its previous theme, 
-    //then it decorates it by this theme
-    theme.applyToElement = (element) => {
-        if (element.theme) {
-            element.theme.undecorateElement(element);
-        }
-        theme.decorateElement(element);
-    }
-    
     return theme;
 }

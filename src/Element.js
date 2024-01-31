@@ -259,18 +259,17 @@ const defineProperties = (element) => {
         enumerable: true,
         get: () => element.__theme,
         set: (theme) => {
-            //set theme
-            if (theme !== undefined && theme !== null) {
-                element.__theme = theme;
-                theme.applyToElement(element);
+            //undecorate element
+            if (element.__theme && element.__theme !== null) {
+                element.__theme.undecorateElement(element);
             }
 
-            //remove theme
-            else {
-                if (element.__theme) {
-                    element.__theme.undecorateElement(element);
-                }
-                element.__theme = undefined;
+            //store theme
+            element.__theme = theme;
+
+            //decorate element
+            if (theme && theme !== null) {
+                theme.decorateElement(element);
             }
 
             //apply theme to children
@@ -468,6 +467,7 @@ const setDefaults = (element) => {
     element.style.boxSizing = 'border-box';
     element.style.margin = '0';
     element.style.padding = '0';
+    element.style.overflow = 'hidden';
 
     //drag-n-drop-related functionality
     if (element.tagName === 'INPUT') {

@@ -69,7 +69,7 @@ const InputForm = (name, left, top, text = '') => {
                     [State.ENABLED + State.FOCUSED]: {
                         backgroundColor: 'yellow'
                     },
-                    [[State.ENABLED + State.DRAG_ACCEPTED, State.ENABLED + State.DRAG_ACCEPTED + State.ACTIVE]]: {
+                    [[State.ENABLED + State.DRAG_ACCEPTED, State.ENABLED + State.DRAG_ACCEPTED + State.ACTIVE, State.ENABLED + State.DRAG_ACCEPTED + State.FOCUSED]]: {
                         backgroundColor: 'lightgreen'
                     },
                     [[State.ENABLED + State.DRAG_DENIED, State.ENABLED + State.DRAG_DENIED + State.ACTIVE]]: {
@@ -89,12 +89,6 @@ const InputForm = (name, left, top, text = '') => {
                     height: '30px'
                 },
                 styles: {
-                    /*[[State.ENABLED,
-                      State.ENABLED + State.ACTIVE,
-                      State.ENABLED + State.FOCUSED, 
-                      State.ENABLED + State.ACTIVE + State.FOCUSED]]: {
-                        backgroundColor: 'lightgray'
-                    },*/
                     [[State.ENABLED + State.HIGHLIGHTED, 
                       State.ENABLED + State.ACTIVE + State.HIGHLIGHTED,
                       State.ENABLED + State.FOCUSED + State.HIGHLIGHTED, 
@@ -130,10 +124,5 @@ const tempDiv = Element('div', {
 document.body.append(tempDiv);    
 
 const inputForm2 = InputForm('inputForm2', '20px', '10px', 'form2');
-tempDiv.append(inputForm2);
 inputForm2.okButton.draggable = true;
-
-//document.body.style.display = 'flex';
-//document.body.style.gap = '12px';
-
-//inputForm1.enabled = false;
+tempDiv.append(inputForm2);
