@@ -125,9 +125,12 @@ const updateStyleAndEffectiveStateOfChildren = (element) => {
     //set the style from the effective state
     updateStyleFromEffectiveState(element);
 
+    //update listeners from state
+    updateStateEventListeners(element);
+
     //update the effective state of children
     for(let child = element.firstElementChild; child !== null; child = child.nextElementSibling) {
-        updateEffectiveStateHelper(child, element._effectiveState);
+        updateEffectiveStateHelper(child, element.__effectiveState);
     }
 
     //fire the state changed event to allow users of element to 
@@ -316,11 +319,14 @@ const updateStateEventListeners = (element) => {
     let highlighted = 0;
     let active = 0;
     let dragover = 0;
-    for(const state in element.__styles) {
-        focused |= state & State.FOCUSED;
-        highlighted |= state & State.HIGHLIGHTED;
-        active |= state & State.ACTIVE;
-        dragover |= state & (State.DRAG_ACCEPTED | State.DRAG_DENIED);
+
+    if (element.__effectiveState & State.ENABLED) {
+        for(const state in element.__styles) {
+            focused |= state & State.FOCUSED;
+            highlighted |= state & State.HIGHLIGHTED;
+            active |= state & State.ACTIVE;
+            dragover |= state & (State.DRAG_ACCEPTED | State.DRAG_DENIED);
+        }
     }
 
     //setup handlers
@@ -426,18 +432,29 @@ const defineMethods = (element) => {
         }
     }
 
-    //sets the element properties
-    element.setProperties = (properties) => setProperties(element, properties);
-
-    //sets the element styles
-    element.setStyles = (styles) => setStyles(element, styles);
-
-    //sets the element events
-    element.setEvents = (events) => setEvents(element, events);
-
     //apply decoration to element
     element.applyDecoration = (decoration) => {
         applyDecoration(element, decoration);
+    }
+
+    //addEventListener now returns the listener
+    element.addEventListener = function (eventName, eventFunction, options) {
+        EventTarget.prototype.addEventListener.call(this, eventName, eventFunction, options);
+        return {
+            event: eventName,
+            listener: eventFunction,
+            options: options
+        }
+    }
+
+    //removeEventListener detects if first parameter is object returned by addEventListener above and calls the relevant function
+    element.removeEventListener = function (eventNameOrListenerData, eventFunction, options) {
+        if (eventNameOrListenerData.listener) {            
+            EventTarget.prototype.removeEventListener.call(this, eventNameOrListenerData.event, eventNameOrListenerData.listener, eventNameOrListenerData.options);
+        }
+        else {
+            EventTarget.prototype.removeEventListener.call(this, eventNameOrListenerData, eventFunction, options);
+        }
     }
 }
 
