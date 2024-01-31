@@ -25,6 +25,9 @@ const removeThemeDecorativeElements = (element) => {
  ******************************************************************************************************************************/
 
 
+/**
+ * Special property name used to tag elements that are temporary and used only for theming.
+ */    
 export const ThemeDecorationTag = 'themeDecoration';
 
 
