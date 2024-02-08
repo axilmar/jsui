@@ -22,4 +22,3 @@ server.get('/api/data', (req, res) => {
 })
 
 server.start();
-

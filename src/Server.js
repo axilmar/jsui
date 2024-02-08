@@ -285,6 +285,7 @@ const defaultRequestHandler = (req, res) => {
     if (!resource) {
         logger.error("JSUI: Server: resource not found: " + req.path);
         res.sendStatus(404);
+        return;
     }
 
     //convert the request path to a filesystem path
