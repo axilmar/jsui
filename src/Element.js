@@ -1,8 +1,9 @@
-import { isFirefox } from './init.js';
-
 /******************************************************************************************************************************
     PRIVATE
  ******************************************************************************************************************************/
+
+
+import { hasDragEnterBug } from './init.js';
 
 
 //given a string of states, it returns an array of their values; 
@@ -358,7 +359,7 @@ const updateStateEventListeners = (element) => {
         element.addEventListener('dragstart', Element_onDragStart);
         element.addEventListener('dragenter', Element_onDragEnter);
         //firefox bug: when mouse enters text node under input, input receives dragleave
-        if (isFirefox) {
+        if (hasDragEnterBug) {
             element.addEventListener('dragover', Element_onDragOver); 
         }
         element.addEventListener('dragleave', Element_onDragLeave);

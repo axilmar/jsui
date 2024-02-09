@@ -66,3 +66,28 @@ export const logger = {
     trace: (...args) => console.trace('[' + Timestamp() + ']', ...args),
     warn : (...args) => console.warn ('[' + Timestamp() + ']', ...args),
 }
+
+
+/**
+ * Adds backslash before a character that is special for url and regex
+ * that is not escaped yet. The following characters are escaped:
+ * '?'
+ * @param {string} str string to process.
+ * @returns the string with the above-mentioned characters escaped.
+ */
+export const escapeUrlRegExChars = (str) => {
+    //find '?'
+    const index = str.indexOf('?');
+
+    //if not found, return the string
+    if (index < 0) {
+        return str;
+    }
+
+    //found; add '\' if it does not exist
+    if (index === 0 || str[index - 1] !== '\\') {
+        str = str.substring(0, index) + '\\' + str.substring(index);
+    }
+
+    return str;
+}

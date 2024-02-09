@@ -3,34 +3,24 @@
  ******************************************************************************************************************************/
 
 
+import { hasPopStateBug } from './init.js';
+import { isString, escapeUrlRegExChars } from './util.js';
+
+
+//varname regular expression
+const varNameRegEx = /[a-zA-Z][a-zA-Z0-9_]*/y;
+
+
 //regular expression for variable content;
 //a variable's content ends with '/' or '?' or '&' or '#' or end of string.
-const varRegEx = /[^/?&#\Z]*/y;
-
-
-//check if character is letter
-const isLetter = (ch) => {
-    return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z');
-}
-
-
-//check if character is digit
-const isDigit = (ch) => {
-    return ch >= '0' && ch <= '9';
-}
+const varContentRegEx = /[^/?&#\Z]*/y;
 
 
 //parse variable name
-const parseVariable = (route, index) => {
-    if (isLetter(route[index])) {        
-        for(++index; index < route.length; ++index) {
-            const ch = route[index];
-            if (!isLetter(ch) && !isDigit(ch) && ch !== '_') {
-                break;
-            }
-        }
-    }
-    return index;
+const parseVariableName = (route, index) => {
+    varNameRegEx.lastIndex = index;
+    const m = varNameRegEx.exec(route);    
+    return m ? varNameRegEx.lastIndex : index;
 }
 
 
@@ -40,7 +30,6 @@ const matchRoute = (routeEntry, route) => {
 
     //the match result
     let matchResult = {
-        remainingCount: 0,
         endIndex: 0,
         variables: {}
     }
@@ -61,7 +50,6 @@ const matchRoute = (routeEntry, route) => {
         }
 
         //set the match result
-        matchResult.remainingCount = segment.segments.length - (segmentIndex + 1);
         matchResult.endIndex = segment.regex.lastIndex;
 
         //capture the value of a variable
@@ -108,7 +96,7 @@ const defineMethods = (router) => {
 
 //adds the event listeners required for routing
 const addEventListeners = (router) => {
-    const listener = (event) => router.onLocationChanged(event);
+    const listener = hasPopStateBug ? (event) => setTimeout(() => router.onLocationChanged(event), 0) : (event) => router.onLocationChanged(event);
     window.addEventListener('popstate', listener);
     window.addEventListener('pageshow', listener);
 }
@@ -117,14 +105,35 @@ const addEventListeners = (router) => {
 //add a route to a router
 function Router_addRoute(route, func) {
     //check the route
-    if (!route || route === null || route.length === 0) {
-        throw new Error("JSUI: Router: addRoute: invalid route.");
+    if (!route) {
+        throw new Error("JSUI: Router: addRoute: invalid route");
     }
 
     //check the func
-    if (!func || func === null) {
-        throw new Error("JSUI: Router: addRoute: invalid function.");
+    if (!func) {
+        throw new Error("JSUI: Router: addRoute: invalid function");
     }
+
+    //if the route is a regular expression, then put in one segment that uses that regular expression.
+    if (route instanceof RegExp) {
+        this.__routes[route] = {
+            route: route,
+            segments: [{startIndex: 0, endIndex: route.source.length, regex: new RegExp(route.source.replaceAll('\\', ''), 'y')}],
+            func: func
+        };
+        return;
+    }
+
+    //if the route isn't a string, then get the string from the object
+    if (!isString(route)) {
+        route = route.toString();
+        if (!isString(route)) {
+            throw new Error("JSUI: Router: addRoute: route is not a string or does not evaluate to a string");
+        }
+    }
+
+    //escape characters that are special for regex that are not escaped yet
+    route = escapeUrlRegExChars(route);
 
     //break down the route in segments based on variables
     const segments = [];
@@ -148,7 +157,7 @@ function Router_addRoute(route, func) {
         ++varStartIndex;
 
         //find the end of variable
-        let varEndIndex = parseVariable(route, varStartIndex);
+        let varEndIndex = parseVariableName(route, varStartIndex);
 
         //if the variable name length was 0, then there was an error
         if (varEndIndex === varStartIndex) {
@@ -156,7 +165,7 @@ function Router_addRoute(route, func) {
         }
 
         //put a segment for variable
-        segments.push({startIndex: varStartIndex, endIndex: varEndIndex, regex: varRegEx, varname: route.substring(varStartIndex, varEndIndex)});
+        segments.push({startIndex: varStartIndex, endIndex: varEndIndex, regex: varContentRegEx, varname: route.substring(varStartIndex, varEndIndex)});
 
         //continue parsing from variable end
         index = varEndIndex;
@@ -189,21 +198,23 @@ function Router_activateRoute(route) {
 
     //the best match result
     let bestMatchResult = {
-        remainingCount : Number.MAX_SAFE_INTEGER
+        endIndex : 0
     };
 
     //search routes one by one, trying to find the best match
-    for(const routeEntry of this.__routes) {
+    for(const registeredRoute in this.__routes) {
+        const routeEntry = this.__routes[registeredRoute];
+
         //execute the match
         const matchResult = matchRoute(routeEntry, route);
 
         //if found new best result, store it
-        if (matchResult.remainingCount < bestMatchResult.remainingCount) {
+        if (matchResult.endIndex > bestMatchResult.endIndex) {
             bestRouteEntry = routeEntry;
             bestMatchResult = matchResult;
 
             //if the remaining count is zero, then the best possible match is found
-            if (matchResult.remainingCount === 0) {
+            if (matchResult.endIndex === route.length) {
                 break;
             }
         }
@@ -213,16 +224,18 @@ function Router_activateRoute(route) {
     if (bestRouteEntry) {
         bestRouteEntry.func({
             router: this,
-            matchedRoute: route.substring(0, matchResult.endIndex),
-            unmatchedRoute: route.substring(matchResult.endIndex),
-            variables: matchResult.variables
+            registeredRoute: bestRouteEntry.route,
+            requestedRoute: route,
+            matchedRoute: route.substring(0, bestMatchResult.endIndex),
+            unmatchedRoute: route.substring(bestMatchResult.endIndex),
+            variables: bestMatchResult.variables
         });
+        return true;
     }
 
     //else could not find a matching route
-    else {
-        console.warn("JSUI: Router: activateRoute: cannot match route: '" + route + "'.");
-    }
+    console.warn("JSUI: Router: activateRoute: cannot match route: '" + route + "'.");
+    return false;
 }
 
 
@@ -241,12 +254,121 @@ function Router_locationChanged() {
  ******************************************************************************************************************************/
 
 
-export const Router = ({trackLocationChange = false} = {}) => {
+/**
+ * Creates a router object.
+ * 
+ * The router object provides the following methods:
+ * 
+ * -addRoute(route, func):
+ * 
+ *      The function 'addRoute' is used to add a route and a route handler to a router.
+ * 
+ *      Parameters:
+ * 
+ *          -route:
+ *              A regular expression string that can also contain variables in the form ':'<variable name>'.
+ *              A variable name must conform to the following regular expression: [a-zA-Z][a-zA-Z0-9_]*. 
+ * 
+ *              Examples:
+ * 
+ *                  /foo
+ *                  /foo/bar
+ *                  /foo/bar/32
+ *                  /\/foo\/bar/
+ *                  /\/foo\/bar/:id
+ *                  /foo/bar/:id?name=:name&count=:count
+ *                  /foo/bar#intro
+ * 
+ *          -func:
+ *              A function with the following signature: 
+ * 
+ *              ({router, registeredRoute, requestedRoute, matchedRoute, unmatchedRoute, variables})
+ * 
+ *              Parameters:
+ * 
+ *                  -router: the router object that invoked the function.
+ *                  -registeredRoute: the string or regular expression that was used in addRoute.
+ *                  -requestedRoute: the route to be activated.
+ *                  -matchedRoute: the portion of the requested route that was matched.
+ *                  -unmatchedRoute: the portion of the requested route that was not matched.
+ *                  -variables: an object that contains properties for each variable parsed.
+ * 
+ *              The unmatched portion of the route can be passed to a sub-route in order to allow router nesting.
+ * 
+ * -removeRoute(route):
+ * 
+ *      Removes a previously added route. 
+ * 
+ *      Parameters:
+ * 
+ *          -route: the route string or regular expression as passed to 'addRoute'.
+ * 
+ * -activateRoute(route):
+ * 
+ *      Activates the given route. 
+ * 
+ *      Parameters:
+ * 
+ *          -route: the route to activate; it must be a string.
+ * 
+ *      Returns:
+ * 
+ *          -true: if a route was matched.
+ *          -false: if a route was not matched.
+ * 
+ * -onLocationChanged(event):
+ * 
+ *      Callback function to be invoked on 'popstate' or 'pageshow' events.
+ *      The default implementation invokes the method 'activateRoute' with parameter taken from window.location.
+ * 
+ *      Parameters:
+ * 
+ *          -event: a PopStateEvent for 'popstate' or PageTransitionEvent for 'pageshow'.
+ * 
+ * Route selection algorithm:
+ * 
+ *      The router selects the first route that consumes the biggest part of the requested route.
+ * 
+ *      Routes are examined in property-order of the internal object that is used for keeping the routes,
+ *      which is the creation order for non-integer strings.
+ * 
+ * Example:
+ * 
+ *      //create the main router
+ *      const mainRouter = Router();
+ * 
+ *      //add the main routes
+ *      mainRouter.addRoute('/', (r) => { showApp(); });
+ *      mainRouter.addRoute('/profile', (r) => { showProfile(); });
+ *      mainRouter.addRoute('/about', (r) => { showAbout(); });
+ * 
+ *      //create a sub router for customers
+ *      const customerRouter = SubRouter();
+ *      mainRouter.addRoute('/customer', (r) => { customerRouter.activateRoute(r.unmatchedRoute); });
+ * 
+ *      //add customer routes
+ *      customerRouter.addRoute('/:customerId', (r) => { showCustomer(r.variables.customerId); });
+ *      customerRouter.addRoute('/:customerId/product', (r) => { showCustomerProducts(r.variables.customerId); });
+ *      customerRouter.addRoute('/:customerId/product/:productId', (r) => { showCustomerProduct(r.variables.customerId, r.variables.productId); });
+ * 
+ * @param {boolean} trackLocation if set, then event handlers are added to monitor the address bar for changes. The default is true.
+ *  Pass 'false' to this parameter to create a sub-router.
+ * @returns the router object.
+ */    
+export const Router = ({trackLocation = true} = {}) => {
     const router = {};
     defineProperties(router);
     defineMethods(router);
-    if (trackLocationChange) {
+    if (trackLocation) {
         addEventListeners(router);
     }
     return router;
 }
+
+
+/**
+ * Creates a router that does not track location change.
+ * Used for subrouters.
+ * @returns a router.
+ */
+export const SubRouter = () => Router({trackLocation: false});
