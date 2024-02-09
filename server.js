@@ -1,5 +1,9 @@
 import { Server } from './src/Server.js';
 
+const myObject = {
+    toString: () => '/test/test3'
+}
+
 const resources = [
     '/index.html', 
     '/main.js', 
@@ -12,7 +16,8 @@ const resources = [
         subtree: false
     },
     /\/test\/test1\/temp_[0-9]+.json/,
-    /\/test\/test2/
+    /\/test\/test2/,
+    myObject
 ]
 
 const server = Server({resources, debug: true});

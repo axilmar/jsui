@@ -100,18 +100,25 @@ const processResources = (rootFolder, resourceSpecs) => {
         let fsPath;
         let subtree;
 
-        //if resource is a string, it represents a file name or a folder name
-        if (isString(resourceSpec)) {
-            const r = checkFile(rootFolder, resourceSpec);
+        //if the resource is a regular expression
+        if (resourceSpec instanceof RegExp) {
+            type = checkRegExp(resourceSpec);
+            resourceRegExp = resourceSpec;
+        }
+
+        //else if the object is a string or does not have a path property and evaluates to a string
+        else if (isString(resourceSpec) || (!resourceSpec.path && isString(resourceSpec.toString()))) {
+            let srcPath = resourceSpec;
+            if (!isString(srcPath)) {
+                srcPath = resourceSpec.toString();
+                if (!isString(srcPath)) {
+                    throw new Error("JSUI: Server: resources: a resource cannot be evaluated to a string: " + JSON.stringify(resourceSpec));
+                }
+            }
+            const r = checkFile(rootFolder, srcPath);
             type = r.type;
             resourcePath = r.resourcePath;
             fsPath = r.fsPath;
-        }
-
-        //else if the resource is a regular expression
-        else if (resourceSpec instanceof RegExp) {
-            type = checkRegExp(resourceSpec);
-            resourceRegExp = resourceSpec;
         }
 
         //else the resource spec is an object
@@ -124,8 +131,8 @@ const processResources = (rootFolder, resourceSpecs) => {
 
             //if path is not a regexp or a string
             //then the object is not well formed
-            if (!isString(resourceSpec.path) && !(resourceSpec.path instanceof RegExp)) {
-                throw new Error("JSUI: Server: resource.path shall be either a string or a regular expression.");
+            if (!isString(resourceSpec.path) && !(resourceSpec.path instanceof RegExp) && !isString(resourceSpec.path.toString())) {
+                throw new Error("JSUI: Server: resource.path shall be either a string or a regular expression or evaluate to a string.");
             }
 
             //if the path is a regular expression
@@ -136,7 +143,14 @@ const processResources = (rootFolder, resourceSpecs) => {
 
             //else check for file/directory
             else {
-                const r = checkFile(rootFolder, resourceSpec.path);
+                let srcPath = resourceSpec.path;
+                if (!isString(srcPath)) {
+                    srcPath = srcPath.toString();
+                    if (!isString(srcPath)) {
+                        throw new Error("JSUI: Server: resources: a resource.path cannot be evaluated to a string: " + JSON.stringify(resourceSpec.path));
+                    }
+                }
+                const r = checkFile(rootFolder, srcPath);
                 type = r.type;
                 resourcePath = r.resourcePath;
                 fsPath = r.fsPath;
@@ -352,14 +366,20 @@ const defaultRequestHandler = (req, res) => {
  * 
  *  Each entry can have one of the following possible forms:
  * 
- *      1) file/directory entry as a string. Examples:
+ *      1) file/directory entry as a string or as an object that evaluates to a string via 'toString()'. Examples:
+ * 
+ *          const myObject = {
+ *              toString: () => return '/pages';
+ *          };
  * 
  *          '/pages/foo.html'
  *          '/pages'
- *          '/public/[a-zA-Z0-9_]+/[a-zA-Z0-9_].html'
- *          '/public/[a-zA-Z0-9_]+'
+ *          //public/[a-zA-Z0-9_]+/[a-zA-Z0-9_].html/
+ *          //public/[a-zA-Z0-9_]+/
+ *          myObject
  * 
- *      2) file/directory entry as an object. Examples:
+ *      2) file/directory entry as an object that has a 'path' variable which is a string, a regular expression
+ *         or it evaluates to a string via 'toString()'. Examples:
  * 
  *          {
  *              path: '/pages/foo.html'
@@ -375,15 +395,20 @@ const defaultRequestHandler = (req, res) => {
  *          }
  * 
  *          {
- *              path: '/p[a-zA-Z0-0_]+/foo.html'
+ *              path: //p[a-zA-Z0-0_]+/foo.html/
  *          }
  * 
  *          {
- *              path: '/p[a-zA-Z0-0_]+'
+ *              path: //p[a-zA-Z0-0_]+/
  *          }
  * 
  *          {
- *              path: '/p[a-zA-Z0-0_]+',
+ *              path: //p[a-zA-Z0-0_]+/
+ *              subtree: true
+ *          }
+ * 
+ *          {
+ *              path: myObject
  *              subtree: true
  *          }
  * 
