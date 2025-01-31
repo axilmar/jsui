@@ -17,6 +17,19 @@ const forEachChild = (parentElement, func) => {
     }
 }
 
+//execute function for the children elements of an element;
+//if the function returns true, then stop.
+const forAnyChild = (parentElement, func) => {
+    const children = parentElement.children;
+    for(let index = 0; index < children.length; ++index) {
+        const child = children.item(index);
+        if (func(child)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 //calls the appropriate redecorateElement/decorateElement/undecorateElement functions for the given theme, element and tree states
 const redecorateElement = (element, oldTreeState, newTreeState) => {
     if (element._theme) {
@@ -57,7 +70,9 @@ const updateTreeState = (element, parentTreeState) => {
 //sets the state of an object
 const setState = (element, newState) => {
     if (newState !== element._state) {
+        const oldState = element._state;
         element._state = newState;
+        element.onStateChanged?.(oldState, element._state);
         updateTreeState(element, element.parentElement?._treeState || 0);
     }
 }
@@ -183,24 +198,19 @@ const setPressedState = (element, newValue) => setState(element, computeFlags(el
 //the mouse down handler turns the pressed state to true
 const mouseDownHandler = (event) => {
     event.target.pressed = true;
+    document.addEventListener('mouseup', () => event.target.pressed = false, { once: true });
 }
 
-//the mouse up handler turns the pressed state to false
-const mouseUpHandler = (event) => {
-    event.target.pressed = false;
-}
-
-//set the pressable property
+//set the pressable property; only the mouse down handler is registered,
+//because the mouseup happens anywhere on the screen
 const setPressable = (element, newValue) => {
     if (newValue !== element._focusable) {
         element._pressable = newValue;
         if (newValue) {
             element.addEventListener('mousedown', mouseDownHandler);
-            element.addEventListener('mouseup', mouseUpHandler);            
         }
         else {
             element.removeEventListener('mousedown', mouseDownHandler);
-            element.removeEventListener('mouseup', mouseUpHandler);            
         }
     }
 }
@@ -263,6 +273,108 @@ const setEnabledState = (element, newValue) => element.disabled = !newValue;
 const getDisabledState = (element) => hasFlags(element._state, State.DISABLED);
 const setDisabledState = (element, newValue) => setState(element, computeFlags(element._state, State.DISABLED, newValue));
 
+//the contains element function
+function containsElementFunction(subElement) {
+    if (subElement) {
+        for(let element = subElement; element; element = element.parentElement) {
+            if (element === this) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+//a enhanced focus function that can move the input focus to the first focusable descendant element
+function focusFunction() {
+    //try focusing this first; if it succeeds, do nothing else
+    this._originalFocus();
+    if (document.activeElement === this) {
+        return;
+    }
+    
+    //try focusing children
+    forAnyChild(this, (child) => {
+        child.focus();
+        return child.containsElement?.(document.activeElement);
+    });
+}
+
+//an enhanced blur function that knows how to remove a focus from a container
+function blurFunction() {
+    if (this.containsElement?.(document.activeElement)) {
+        document.activeElement._originalBlur();
+    }
+}
+
+/**
+    Element constructor.
+    
+    It adds the following new properties to elements:
+    
+    - state: a combination of flags that reflect the state of the element (see State enumeration for possible values). 0 by default.
+    - treeState: a read-only value that combines the tree state of the parent element to the state of the element. 0 by default.
+    - highlighted: when set, the element is in highlighted state. False by default.
+    - highlightable: when set, the element gets mouseenter/mouseleave handlers which set and reset the highlighted state accordingly. False by default.
+    - pressed: when set, the element is in pressed state. False by default.
+    - pressable: when set, the element gets mousedown/mouseup (on document) handlers which set and reset the pressed state accordingly. False by default.
+    - invalid: when set, the element is in invalid state (used to indicate an input error). False by default.
+    - focused: when set, the element either has or contains the input focus. False by default.
+    - focusable: when set, an ancestor element gets the focused state, if a descentant element gets the input focus. False by default.
+    - enabled: the opposite of disabled. True by default.
+    - disabled: for elements that do not have a disabled property, this sets the disabled state for them.
+        Elements with a disabled property get the disabled state through attribute monitoring (via MutationObserver).
+        False by default.
+    - theme: when set, an element is decorated by the given theme; decoration happens according to class list 
+      and object type of an element. Undefined by default.
+      
+    It also adds the following methods to the element:
+    
+    - containsElement(element):
+        returns true when the given element is or is contained into the target element.
+        
+    - focus():
+        If the element is not focusable, then calling focus() on it sets the focus to its first focusable element.
+        
+    - blur():
+        If the target element contains the active element, then blur() is called on the active element.
+        Otherwise, nothing happens.
+      
+    It also assumes the existence of the following optional callback methods for an element:
+    
+    - onStateChanged(oldState, newState):
+        Invoked when the state of an object is modified.
+
+    - onTreeStateChanged(oldTreeState, newTreeState):
+        Invoked when the tree state of an object is modified.
+
+    States of an element are 'inherited' by descendant elements.
+    For example, if an anscestor element becomes disabled, then all descentants become disabled.
+    If an ancestor becomes highlighted, then all descendants also become highlighted.
+    If an ancestor becomes invalid, then all descendants also become invalid etc.
+    
+    This allows the state of a container to be reflected to all its descentants, thus allowing
+    complex elements with many sub-elements to form a single coherent widget.
+    
+    Also, If a theme is set on an ancestor element, all children get the same theme.
+    
+    Children inherit the state and theme of the parent as they are added to a parent element.
+    
+    @param element element to construct.
+    
+    @param properties object with element properties. 
+        The following special properties are recognized:
+        
+        - attributes: points to an object that contains key/value pairs to be added as attributes to the element.
+        - children: array of children.
+        - classList: array of class names; although the classList property of elements is read only, this allows
+            the property className to be set from an array of strings that represent the class names of the element.
+        - parent/parentElement: adds the current element to the given parent element, via appendChild.
+        - style: points to an object that contains key/value pairs to be set as properties of the element's style object.
+        
+    @return the element.
+    
+ */
 export const Element = (element, properties = {}) => {
     //define new properties
     defineValueProperty(element, 'state', 0, setState);
@@ -277,12 +389,26 @@ export const Element = (element, properties = {}) => {
     defineValueProperty(element, 'focusable', false, setFocusable);
     defineValueProperty(element, 'theme', undefined, setTheme);
     
+    //define enabled property which is the opposite of disabled property
     defineInterfaceProperty(element, 'enabled', getEnabledState, setEnabledState);
+    
+    //if the element does not have a disabled property, then add one which sets its state to DISABLED.
     const hasDisabled = 'disabled' in element;
     Object.defineProperty(element, '_hasDisabled', { configurable: false, enumerable: false, value: hasDisabled, writable: false });
     if (!hasDisabled) {
         defineInterfaceProperty(element, 'disabled', getDisabledState, setDisabledState);
     }
+    
+    //add a containsElement function
+    element.containsElement = containsElementFunction;
+    
+    //define custom focus and blur functions that work on containers
+    const originalFocus = element.focus;
+    Object.defineProperty(element, '_originalFocus', { configurable: false, enumerable: false, value: originalFocus, writable: false });
+    const originalBlur = element.blur;
+    Object.defineProperty(element, '_originalBlur', { configurable: false, enumerable: false, value: originalBlur, writable: false });
+    element.focus = focusFunction;
+    element.blur = blurFunction;
     
     //init properties
     for(const propertyKey in properties) {
