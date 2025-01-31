@@ -167,13 +167,13 @@ const getHighlightedState = (element) => hasFlags(element._state, State.HIGHLIGH
 const setHighlightedState = (element, newValue) => setState(element, computeFlags(element._state, State.HIGHLIGHTED, newValue));
 
 //the mouse enter handler turns the highlighted state to true
-const mouseEnterHandler = (event) => {
-    event.target.highlighted = true;
+function mouseEnterHandler(event) {
+    this.highlighted = true;
 }
 
 //the mouse leave handler turns the highlighted state to false
-const mouseLeaveHandler = (event) => {
-    event.target.highlighted = false;
+function mouseLeaveHandler(event) {
+    this.highlighted = false;
 }
 
 //set the highlightable property
@@ -196,9 +196,9 @@ const getPressedState = (element) => hasFlags(element._state, State.PRESSED);
 const setPressedState = (element, newValue) => setState(element, computeFlags(element._state, State.PRESSED, newValue));
 
 //the mouse down handler turns the pressed state to true
-const mouseDownHandler = (event) => {
-    event.target.pressed = true;
-    document.addEventListener('mouseup', () => event.target.pressed = false, { once: true });
+function mouseDownHandler(event) {
+    this.pressed = true;
+    document.addEventListener('mouseup', () => this.pressed = false, { once: true });
 }
 
 //set the pressable property; only the mouse down handler is registered,
