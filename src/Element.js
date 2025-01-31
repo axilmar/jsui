@@ -228,13 +228,13 @@ const getFocusedState = (element) => hasFlags(element._state, State.FOCUSED);
 const setFocusedState = (element, newValue) => setState(element, computeFlags(element._state, State.FOCUSED, newValue));
 
 //the focusin handler turns the focused state to true
-const focusInHandler = (event) => {
-    event.target.focused = true;
+function focusInHandler(event) {
+    this.focused = true;
 }
 
 //the focusout handler turns the focused state to false
-const focusOutHandler = (event) => {
-    event.target.focused = false;
+function focusOutHandler(event) {
+    this.focused = false;
 }
 
 //set the focusable property
@@ -320,7 +320,7 @@ function blurFunction() {
     - pressable: when set, the element gets mousedown/mouseup (on document) handlers which set and reset the pressed state accordingly. False by default.
     - invalid: when set, the element is in invalid state (used to indicate an input error). False by default.
     - focused: when set, the element either has or contains the input focus. False by default.
-    - focusable: when set, an ancestor element gets the focused state, if a descentant element gets the input focus. False by default.
+    - focusable: when set, the element gets the focused state, if a descentant element gets the input focus. False by default.
     - enabled: the opposite of disabled. True by default.
     - disabled: for elements that do not have a disabled property, this sets the disabled state for them.
         Elements with a disabled property get the disabled state through attribute monitoring (via MutationObserver).

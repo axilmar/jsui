@@ -4,21 +4,21 @@ import { Element } from './src/Element.js';
 
 const testTheme = Theme({ 
     decorateElement: (element, state) => {
-        element.style.backgroundColor = 'yellow';
-        if ((state & State.DISABLED) == State.DISABLED) {
+        if ((state & State.DISABLED) === State.DISABLED) {
             element.style.backgroundColor = 'lightgrey';
             return;
         }
-        if ((state & State.HIGHLIGHTED) == State.HIGHLIGHTED) {
-            element.style.backgroundColor = 'cyan';
-        }
-        if ((state & State.SELECTED) == State.SELECTED) {
+        element.style.backgroundColor = 'yellow';
+        if ((state & State.SELECTED) === State.SELECTED) {
             element.style.backgroundColor = 'lightblue';
         }
-        if ((state & State.FOCUSED) == State.FOCUSED) {
+        if ((state & State.HIGHLIGHTED) === State.HIGHLIGHTED) {
+            element.style.backgroundColor = 'cyan';
+        }
+        if ((state & State.FOCUSED) === State.FOCUSED) {
             element.style.backgroundColor = 'purple';
         }
-        if ((state & State.PRESSED) == State.PRESSED) {
+        if ((state & State.PRESSED) === State.PRESSED) {
             element.style.backgroundColor = 'blue';
         }
     }
@@ -38,7 +38,6 @@ const testDiv = Element(document.createElement('div'), {
         console.log("State changed on element with id = " + this.id + "; new state = " + newTreeState);
     },
     onclick: function (event) {
-        console.log("div.focus()");
         this.focus();
     },
     children: [
