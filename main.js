@@ -2,7 +2,7 @@ import { Theme } from './src/Theme.js';
 import { State } from './src/State.js';
 import { Element } from './src/Element.js';
 
-const testTheme = Theme({}, { 
+const testTheme = Theme({ 
     decorateElement: (element, state) => {
         element.style.backgroundColor = 'yellow';
         if ((state & State.DISABLED) == State.DISABLED) {

@@ -1,8 +1,6 @@
 /**
     Creates a theme.
     
-    @param target target object to become a theme object.
-    
     @param properties an object with the following properties:
  
     - decorateElement: decorate function. Signature: (element, newTreeState) : void.
@@ -17,9 +15,10 @@
         
     @return a theme object with the functions specified in properties object.
  */
-export const Theme = (target, properties) => {
-    target.decorateElement = properties.decorateElement;
-    target.undecorateElement = properties.undecorateElement;
-    target.redecorateElement = properties.redecorateElement;
-    return target;
+export const Theme = (properties) => {
+    const theme = {};
+    theme.decorateElement = properties.decorateElement;
+    theme.undecorateElement = properties.undecorateElement;
+    theme.redecorateElement = properties.redecorateElement;
+    return theme;
 }
