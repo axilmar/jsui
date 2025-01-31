@@ -50,4 +50,3 @@ const testDiv = Element(document.createElement('div'), {
     ]
 });
 
-document.body.appendChild(testDiv);
