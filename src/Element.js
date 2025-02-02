@@ -307,46 +307,92 @@ function blurFunction() {
     }
 }
 
+//returns the class list of an element 
+const getClassList = (element) => {
+    return element.className.split(' ');
+}
+
+//sets the class list of an element
+const setClassList = (element, classes) => {
+    element.className = classes.join(' ');
+}
+
 /**
     Element constructor.
     
-    It adds the following new properties to elements:
-    
-    - state: a combination of flags that reflect the state of the element (see State enumeration for possible values). 0 by default.
-    - treeState: a read-only value that combines the tree state of the parent element to the state of the element. 0 by default.
-    - highlighted: when set, the element is in highlighted state. False by default.
-    - highlightable: when set, the element gets mouseenter/mouseleave handlers which set and reset the highlighted state accordingly. False by default.
-    - pressed: when set, the element is in pressed state. False by default.
-    - pressable: when set, the element gets mousedown/mouseup (on document) handlers which set and reset the pressed state accordingly. False by default.
-    - invalid: when set, the element is in invalid state (used to indicate an input error). False by default.
-    - focused: when set, the element either has or contains the input focus. False by default.
-    - focusable: when set, the element gets the focused state, if a descentant element gets the input focus. False by default.
-    - enabled: the opposite of disabled. True by default.
-    - disabled: for elements that do not have a disabled property, this sets the disabled state for them.
-        Elements with a disabled property get the disabled state through attribute monitoring (via MutationObserver).
-        False by default.
-    - theme: when set, an element is decorated by the given theme; decoration happens according to class list 
-      and object type of an element. Undefined by default.
-      
-    It also adds the following methods to the element:
-    
-    - containsElement(element):
-        returns true when the given element is or is contained into the target element.
-        
-    - focus():
-        If the element is not focusable, then calling focus() on it sets the focus to its first focusable element.
-        
-    - blur():
-        If the target element contains the active element, then blur() is called on the active element.
-        Otherwise, nothing happens.
-      
-    It also assumes the existence of the following optional callback methods for an element:
-    
-    - onStateChanged(oldState, newState):
-        Invoked when the state of an object is modified.
+    <h3>Properties</h3>
 
-    - onTreeStateChanged(oldTreeState, newTreeState):
-        Invoked when the tree state of an object is modified.
+    The following properties are added to an element:
+    
+        - state: a combination of flags that reflect the state of the element (see State enumeration for possible values). 
+            0 by default.
+        
+        - treeState: a read-only value that combines the tree state of the parent element to the state of the element. 
+            0 by default.
+        
+        - highlighted: when set, the element is in highlighted state. 
+            False by default.
+        
+        - highlightable: when set, the element gets mouseenter/mouseleave handlers which set and reset the highlighted state accordingly. 
+            False by default.
+        
+        - pressed: when set, the element is in pressed state. 
+            False by default.
+        
+        - pressable: when set, the element gets mousedown/mouseup (on document) handlers which set and reset the pressed state accordingly. 
+            False by default.
+        
+        - invalid: when set, the element is in invalid state (used to indicate an input error). 
+            False by default.
+        
+        - focused: when set, the element either has or contains the input focus. 
+            False by default.
+        
+        - focusable: when set, the element gets the focused state, if a descentant element gets the input focus. 
+            False by default.
+        
+        - enabled: the opposite of disabled. 
+            True by default.
+        
+        - disabled: for elements that do not have a disabled property, this sets the disabled state for them.
+            Elements with a disabled property get the disabled state through attribute monitoring (via MutationObserver).
+            False by default.
+            
+        - theme: when set, an element is decorated by the given theme; decoration happens according to class list 
+          and object type of an element. Undefined by default.
+          
+        - classList: It changes the property to be readable/writable instead of read-only: by setting it to an array of strings,
+            the property className is set to a string that contains the elements of the array joined with space as a separator.
+      
+    <h3>Methods</h3>
+
+    The following methods are added to an element:
+    
+        - containsElement(element):
+            returns true when the given element is or is contained into the target element.
+            
+        - focus():
+            If the element is not focusable, then calling focus() on it sets the focus to its first focusable element.
+            
+        - blur():
+            If the target element contains the active element, then blur() is called on the active element.
+            Otherwise, nothing happens.
+          
+    <h3>Callbacks</h3>
+
+    The following optional callback methods are available:
+    
+        - onStateChanged(oldState, newState):
+            Invoked when the state of an object is modified.
+            The parameter 'oldState' is the old state of the element.
+            The parameter 'newState' is the current state of the element.
+
+        - onTreeStateChanged(oldTreeState, newTreeState):
+            Invoked when the tree state of an object is modified.
+            The parameter 'oldTreeState' is the old tree state of the element.
+            The parameter 'newTreeState' is the current tree state of the element.
+            
+    <h3>UI Tree Runtime State/Theme Inheritance</h3>
 
     States of an element are 'inherited' by descendant elements.
     For example, if an anscestor element becomes disabled, then all descentants become disabled.
@@ -360,16 +406,40 @@ function blurFunction() {
     
     Children inherit the state and theme of the parent as they are added to a parent element.
     
+    <h3>Theming</h3>
+
+    A theme that is assigned to an element must provide the following interface:
+    
+        - decorateElement: decorate function. Signature: (element, newTreeState) : void.
+            Invoked each time an element should be decorated.
+            The parameter 'newTreeState' is the current tree state of the given element.
+        
+        - undecorateElement: undecorate function. Signature: (element, oldTreeState) : void.
+            Invoked each time an element should be undecorated. Optional.
+            The parameter 'oldTreeState' is the previous tree state of the given element.
+            
+        - redecorateElement: redecorate function. Signature: (element, oldTreeState, newTreeState) : void.
+            Invoked each time an element should be redecorated.
+            This function is optional; if not specified, then undecorate(element, oldTreeState) will be called, 
+            followed by decorate(element, newTreeState).
+            The parameter 'newTreeState' is the current tree state of the given element.
+            The parameter 'oldTreeState' is the previous tree state of the given element.
+        
     @param element element to construct.
     
     @param properties object with element properties. 
+    
         The following special properties are recognized:
         
         - attributes: points to an object that contains key/value pairs to be added as attributes to the element.
-        - children: array of children.
+        
+        - children: array of children; they are added to the element in the order they exist in the array.
+        
         - classList: array of class names; although the classList property of elements is read only, this allows
             the property className to be set from an array of strings that represent the class names of the element.
+            
         - parent/parentElement: adds the current element to the given parent element, via appendChild.
+        
         - style: points to an object that contains key/value pairs to be set as properties of the element's style object.
         
     @return the element.
@@ -388,6 +458,7 @@ export const Element = (element, properties = {}) => {
     defineInterfaceProperty(element, 'focused', getFocusedState, setFocusedState);
     defineValueProperty(element, 'focusable', false, setFocusable);
     defineValueProperty(element, 'theme', undefined, setTheme);
+    defineInterfaceProperty(element, 'classList', getClassList, setClassList);
     
     //define enabled property which is the opposite of disabled property
     defineInterfaceProperty(element, 'enabled', getEnabledState, setEnabledState);
@@ -427,10 +498,6 @@ export const Element = (element, properties = {}) => {
                 }
                 break;
                 
-            case 'classList':
-                element.className = propertyValue.join(' ');
-                break;
-            
             case 'parent':
             case 'parentElement':
                 propertyValue.appendChild(element);

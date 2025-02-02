@@ -1,8 +1,7 @@
-import { Theme } from './src/Theme.js';
 import { State } from './src/State.js';
 import { Element } from './src/Element.js';
 
-const testTheme = Theme({ 
+const testTheme = { 
     decorateElement: (element, state) => {
         if ((state & State.DISABLED) === State.DISABLED) {
             element.style.backgroundColor = 'lightgrey';
@@ -22,7 +21,7 @@ const testTheme = Theme({
             element.style.backgroundColor = 'blue';
         }
     }
-});
+}
 
 const testDiv = Element(document.createElement('div'), {
     parent: document.body,
@@ -34,6 +33,7 @@ const testDiv = Element(document.createElement('div'), {
     enabled: true,
     selected: false,
     id: "TestDiv",
+    classList: ["a", "b"],
     onTreeStateChanged: function (oldTreeState, newTreeState) {
         console.log("State changed on element with id = " + this.id + "; new state = " + newTreeState);
     },
@@ -49,3 +49,4 @@ const testDiv = Element(document.createElement('div'), {
     ]
 });
 
+console.log(testDiv.classList);
