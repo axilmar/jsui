@@ -33,7 +33,7 @@ const testDiv = Element(document.createElement('div'), {
     enabled: true,
     selected: false,
     id: "TestDiv",
-    classList: ["a", "b"],
+    className: "a",
     onTreeStateChanged: function (oldTreeState, newTreeState) {
         console.log("State changed on element with id = " + this.id + "; new state = " + newTreeState);
     },
@@ -47,6 +47,10 @@ const testDiv = Element(document.createElement('div'), {
             id: "TestInput"
         })
     ]
-});
+    },
+    {
+        className: 'c'
+    }
+);
 
 console.log(testDiv.classList);

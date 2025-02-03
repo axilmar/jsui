@@ -427,25 +427,31 @@ const setClassList = (element, classes) => {
         
     @param element element to construct.
     
-    @param properties object with element properties. 
+    @param properties array of objects with element properties. 
     
-        The following special properties are recognized:
+        Each properties object shall contain key/value pairs of element properties.
+    
+        Multiple properties objects are allowed in order to have one properties object per 'class'.
+    
+        Properties objects are processed in the order they exist into the array.
+    
+        The following special properties per property object are recognized:
         
-        - attributes: points to an object that contains key/value pairs to be added as attributes to the element.
-        
-        - children: array of children; they are added to the element in the order they exist in the array.
-        
-        - classList: array of class names; although the classList property of elements is read only, this allows
-            the property className to be set from an array of strings that represent the class names of the element.
+            - attributes: points to an object that contains key/value pairs to be added as attributes to the element.
             
-        - parent/parentElement: adds the current element to the given parent element, via appendChild.
-        
-        - style: points to an object that contains key/value pairs to be set as properties of the element's style object.
+            - children: array of children; they are added to the element in the order they exist in the array.
+            
+            - className: Name of the class that the properties object represents.
+                It is added to the element's classname.
+                
+            - parent/parentElement: adds the current element to the given parent element, via appendChild.
+            
+            - style: points to an object that contains key/value pairs to be set as properties of the element's style object.
         
     @return the element.
     
  */
-export const Element = (element, properties = {}) => {
+export const Element = (element, ...properties) => {
     //define new properties
     defineValueProperty(element, 'state', 0, setState);
     defineValueProperty(element, 'treeState', 0);
@@ -482,35 +488,43 @@ export const Element = (element, properties = {}) => {
     element.blur = blurFunction;
     
     //init properties
-    for(const propertyKey in properties) {
-        const propertyValue = properties[propertyKey];
-        
-        switch (propertyKey) {
-            case 'attributes':
-                for(const attributeKey in propertyValue) {
-                    element.setAttribute(attributeKey, propertyValue[attributeKey]);
-                }
-                break;
-                
-            case 'children':
-                for(const child of propertyValue) {
-                    element.appendChild(child);
-                }
-                break;
-                
-            case 'parent':
-            case 'parentElement':
-                propertyValue.appendChild(element);
-                break;
-                
-            case 'style':
-                for(const stylePropertyKey in propertyValue) {
-                    element.style[stylePropertyKey] = propertyValue[stylePropertyKey];
-                }
-                break;
-                
-            default:
-                element[propertyKey] = propertyValue;
+    for(const propertiesObject of properties) {
+        for(const propertyKey in propertiesObject) {
+            const propertyValue = propertiesObject[propertyKey];
+            
+            switch (propertyKey) {
+                case 'attributes':
+                    for(const attributeKey in propertyValue) {
+                        element.setAttribute(attributeKey, propertyValue[attributeKey]);
+                    }
+                    break;
+                    
+                case 'children':
+                    for(const child of propertyValue) {
+                        element.appendChild(child);
+                    }
+                    break;
+                    
+                case 'className':
+                    const currentClassName = element.className;
+                    const separator = currentClassName?.length > 0 ? ' ' : '';
+                    element.className = currentClassName + separator + propertyValue;
+                    break;
+                    
+                case 'parent':
+                case 'parentElement':
+                    propertyValue.appendChild(element);
+                    break;
+                    
+                case 'style':
+                    for(const stylePropertyKey in propertyValue) {
+                        element.style[stylePropertyKey] = propertyValue[stylePropertyKey];
+                    }
+                    break;
+                    
+                default:
+                    element[propertyKey] = propertyValue;
+            }
         }
     }
     
