@@ -429,19 +429,19 @@ const setClassList = (element, classes) => {
     
         @example
         //create a simple element
-        Element(Document.createElement('div'));
+        Element(document.createElement('div'));
         
         @example
         //create an element with a single properties object
-        Element(Document.createElement('div'), 
+        Element(document.createElement('div'), 
             { className: 'div', style: { backgroundColor: 'red', width: '32px', height: '32px' }}
             );
         
         @example
-        //create an element with a multiple properties objects
-        Element(Document.createElement('div'), 
+        //create an element with a multiple properties objects and some children
+        Element(document.createElement('div'), 
             { className: 'div1', style: { backgroundColor: 'red', width: '32px', height: '32px' }},
-            { className: 'div2', style: { display: grid }},
+            { className: 'div2', style: { display: flex, alignItems: 'center' }, children: [ document.createElement('input') ]},
             );
         
     @param element element to construct.
