@@ -424,6 +424,25 @@ const setClassList = (element, classes) => {
             followed by decorate(element, newTreeState).
             The parameter 'newTreeState' is the current tree state of the given element.
             The parameter 'oldTreeState' is the previous tree state of the given element.
+            
+    <h3>Examples</h3>
+    
+        @example
+        //create a simple element
+        Element(Document.createElement('div'));
+        
+        @example
+        //create an element with a single properties object
+        Element(Document.createElement('div'), 
+            { className: 'div', style: { backgroundColor: 'red', width: '32px', height: '32px' }}
+            );
+        
+        @example
+        //create an element with a multiple properties objects
+        Element(Document.createElement('div'), 
+            { className: 'div1', style: { backgroundColor: 'red', width: '32px', height: '32px' }},
+            { className: 'div2', style: { display: grid }},
+            );
         
     @param element element to construct.
     
@@ -442,7 +461,7 @@ const setClassList = (element, classes) => {
             - children: array of children; they are added to the element in the order they exist in the array.
             
             - className: Name of the class that the properties object represents.
-                It is added to the element's classname.
+                It is added to the element's classname, if it exists.
                 
             - parent/parentElement: adds the current element to the given parent element, via appendChild.
             

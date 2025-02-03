@@ -54,3 +54,5 @@ const testDiv = Element(document.createElement('div'), {
 );
 
 console.log(testDiv.classList);
+
+Element(document.createElement('div'));
