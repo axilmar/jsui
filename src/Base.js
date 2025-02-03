@@ -1,0 +1,10 @@
+import { Element } from './Element.js';
+
+/**
+    Creates a base element (html 'base' tag).
+    @param properties property object list.
+    @return base element.
+ */
+export const Base = (...properties) => {
+    return Element(document.createElement('base'), { className: 'Base' }, ...properties);
+}
