@@ -7,3 +7,11 @@ function testAnchorConstructor() {
 }
 
 const testAnchor = anchor({ constructor: testAnchorConstructor, parent: document.body, href:"http://www.wikipedia.org", text: "Wikipedia" });
+
+const theme1 = {
+    decorateElement(element, treeState) {
+        element.style.backgroundColor = 'red';
+    }
+}
+
+document.body.theme = theme1;
