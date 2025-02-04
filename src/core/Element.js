@@ -317,6 +317,13 @@ const setClassList = (element, classes) => {
     element.className = classes.join(' ');
 }
 
+//the redecorate function
+function redecorateFunction() {
+    if (this._theme) {
+        redecorateElement(element, element._treeState, element._treeState);
+    }
+}
+
 /**
     Element constructor.
     
@@ -377,6 +384,10 @@ const setClassList = (element, classes) => {
         - blur():
             If the target element contains the active element, then blur() is called on the active element.
             Otherwise, nothing happens.
+            
+        - redecorate():
+            If the element has a theme associated with it, then the theme is invoked to redecorate the element,
+            in the element's current tree state.
           
     <h3>Callbacks</h3>
 
@@ -428,20 +439,27 @@ const setClassList = (element, classes) => {
     <h3>Examples</h3>
     
         @example
-        //create a simple element
+        //create a simple element.
         Element(document.createElement('div'));
         
         @example
-        //create an element with a single properties object
+        //create an element with a single properties object.
         Element(document.createElement('div'), 
             { className: 'div', style: { backgroundColor: 'red', width: '32px', height: '32px' }}
             );
         
         @example
-        //create an element with a multiple properties objects and some children
+        //create an element with a multiple properties objects and some children.
         Element(document.createElement('div'), 
             { className: 'div1', style: { backgroundColor: 'red', width: '32px', height: '32px' }},
             { className: 'div2', style: { display: flex, alignItems: 'center' }, children: [ document.createElement('input') ]},
+            );
+        
+        @example
+        //create an element with a multiple properties objects and some children, and a constructor.
+        Element(document.createElement('div'), 
+            { className: 'div1', style: { backgroundColor: 'red', width: '32px', height: '32px' }},
+            { className: 'div2', constructor: div2_constructor, style: { display: flex, alignItems: 'center' }, children: [ document.createElement('input') ]},
             );
         
     @param element element to construct.
@@ -459,6 +477,9 @@ const setClassList = (element, classes) => {
             - attributes: points to an object that contains key/value pairs to be added as attributes to the element.
             
             - children: array of children; they are added to the element in the order they exist in the array.
+            
+            - constructor: reference to function with signature (element) : void. 
+                Provided so as that an element is initialized before the properties are set.
             
             - className: Name of the class that the properties object represents.
                 It is added to the element's classname, if it exists.
@@ -506,6 +527,14 @@ export const Element = (element, ...properties) => {
     element.focus = focusFunction;
     element.blur = blurFunction;
     
+    //define the redecorate function
+    element.redecorate = redecorateFunction;
+    
+    //invoke constructors
+    for(const propertiesObject of properties) {
+        propertiesObject.constructor?.(element);
+    }
+    
     //init properties
     for(const propertiesObject of properties) {
         for(const propertyKey in propertiesObject) {
@@ -522,6 +551,10 @@ export const Element = (element, ...properties) => {
                     for(const child of propertyValue) {
                         element.appendChild(child);
                     }
+                    break;
+                    
+                //ignored; invoked above, before setting properties
+                case 'constructor':
                     break;
                     
                 case 'className':

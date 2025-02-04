@@ -1,4 +1,4 @@
-import { Element } from './Element.js';
+import { Element } from '../core/Element.js';
 
 /**
     Creates a datalist element (html 'datalist' tag).
@@ -6,5 +6,5 @@ import { Element } from './Element.js';
     @return datalist element.
  */
 export const DataList = (...properties) => {
-    return Element(document.createElement('datalist'), { className: 'DataList' }, ...properties);
+    return Element(document.createElement('datalist'), { className: 'datalist' }, ...properties);
 }

@@ -1,12 +1,12 @@
-import { Element } from './Element.js';
+import { Element } from '../core/Element.js';
 
 /**
     Creates an input element (html 'input' tag).
     @param properties property object list.
     @return input element.
  */
-export const Input = (...properties) => {
-    return Element(document.createElement('input'), { className: 'Input' }, ...properties);
+export const input = (...properties) => {
+    return Element(document.createElement('input'), { className: 'input' }, ...properties);
 }
 
 /**
@@ -14,8 +14,8 @@ export const Input = (...properties) => {
     @param properties property object list.
     @return input button element.
  */
-export const InputButton = (...properties) => {
-    return Input({ className: 'InputButton', type: 'button' }, ...properties);
+export const inputButton = (...properties) => {
+    return input({ className: 'inputButton', type: 'button' }, ...properties);
 }
 
 /**
@@ -23,8 +23,8 @@ export const InputButton = (...properties) => {
     @param properties property object list.
     @return input checkbox element.
  */
-export const InputCheckbox = (...properties) => {
-    return Input({ className: 'InputCheckbox', type: 'checkbox' }, ...properties);
+export const inputCheckbox = (...properties) => {
+    return input({ className: 'inputCheckbox', type: 'checkbox' }, ...properties);
 }
 
 /**
@@ -32,8 +32,8 @@ export const InputCheckbox = (...properties) => {
     @param properties property object list.
     @return input color element.
  */
-export const InputColor = (...properties) => {
-    return Input({ className: 'InputColor', type: 'color' }, ...properties);
+export const inputColor = (...properties) => {
+    return input({ className: 'inputColor', type: 'color' }, ...properties);
 }
 
 /**
@@ -41,8 +41,8 @@ export const InputColor = (...properties) => {
     @param properties property object list.
     @return input date element.
  */
-export const InputDate = (...properties) => {
-    return Input({ className: 'InputDate', type: 'date' }, ...properties);
+export const inputDate = (...properties) => {
+    return input({ className: 'inputDate', type: 'date' }, ...properties);
 }
 
 /**
@@ -50,8 +50,8 @@ export const InputDate = (...properties) => {
     @param properties property object list.
     @return input datetime-local element.
  */
-export const InputDateTimeLocal = (...properties) => {
-    return Input({ className: 'InputDateTimeLocal', type: 'datetime-local' }, ...properties);
+export const inputDateTimeLocal = (...properties) => {
+    return input({ className: 'inputDateTimeLocal', type: 'datetime-local' }, ...properties);
 }
 
 /**
@@ -59,8 +59,8 @@ export const InputDateTimeLocal = (...properties) => {
     @param properties property object list.
     @return input email element.
  */
-export const InputEmail = (...properties) => {
-    return Input({ className: 'InputEmail', type: 'email' }, ...properties);
+export const inputEmail = (...properties) => {
+    return input({ className: 'inputEmail', type: 'email' }, ...properties);
 }
 
 /**
@@ -68,8 +68,8 @@ export const InputEmail = (...properties) => {
     @param properties property object list.
     @return input file element.
  */
-export const InputFile = (...properties) => {
-    return Input({ className: 'InputFile', type: 'file' }, ...properties);
+export const inputFile = (...properties) => {
+    return input({ className: 'inputFile', type: 'file' }, ...properties);
 }
 
 /**
@@ -77,8 +77,8 @@ export const InputFile = (...properties) => {
     @param properties property object list.
     @return input hidden element.
  */
-export const InputHidden = (...properties) => {
-    return Input({ className: 'InputHidden', type: 'hidden' }, ...properties);
+export const inputHidden = (...properties) => {
+    return input({ className: 'inputHidden', type: 'hidden' }, ...properties);
 }
 
 /**
@@ -86,8 +86,8 @@ export const InputHidden = (...properties) => {
     @param properties property object list.
     @return input image element.
  */
-export const InputImage = (...properties) => {
-    return Input({ className: 'InputImage', type: 'image' }, ...properties);
+export const inputImage = (...properties) => {
+    return input({ className: 'inputImage', type: 'image' }, ...properties);
 }
 
 /**
@@ -95,8 +95,8 @@ export const InputImage = (...properties) => {
     @param properties property object list.
     @return input month element.
  */
-export const InputMonth = (...properties) => {
-    return Input({ className: 'InputMonth', type: 'month' }, ...properties);
+export const inputMonth = (...properties) => {
+    return input({ className: 'inputMonth', type: 'month' }, ...properties);
 }
 
 /**
@@ -104,8 +104,8 @@ export const InputMonth = (...properties) => {
     @param properties property object list.
     @return input number element.
  */
-export const InputNumber = (...properties) => {
-    return Input({ className: 'InputNumber', type: 'number' }, ...properties);
+export const inputNumber = (...properties) => {
+    return input({ className: 'inputNumber', type: 'number' }, ...properties);
 }
 
 /**
@@ -113,8 +113,8 @@ export const InputNumber = (...properties) => {
     @param properties property object list.
     @return input password element.
  */
-export const InputPassword = (...properties) => {
-    return Input({ className: 'InputPassword', type: 'password' }, ...properties);
+export const inputPassword = (...properties) => {
+    return input({ className: 'inputPassword', type: 'password' }, ...properties);
 }
 
 /**
@@ -122,8 +122,8 @@ export const InputPassword = (...properties) => {
     @param properties property object list.
     @return input radio element.
  */
-export const InputRadio = (...properties) => {
-    return Input({ className: 'InputRadio', type: 'radio' }, ...properties);
+export const inputRadio = (...properties) => {
+    return input({ className: 'inputRadio', type: 'radio' }, ...properties);
 }
 
 /**
@@ -131,8 +131,8 @@ export const InputRadio = (...properties) => {
     @param properties property object list.
     @return input range element.
  */
-export const InputRange = (...properties) => {
-    return Input({ className: 'InputRange', type: 'range' }, ...properties);
+export const inputRange = (...properties) => {
+    return input({ className: 'inputRange', type: 'range' }, ...properties);
 }
 
 /**
@@ -140,8 +140,8 @@ export const InputRange = (...properties) => {
     @param properties property object list.
     @return input reset element.
  */
-export const InputReset = (...properties) => {
-    return Input({ className: 'InputReset', type: 'reset' }, ...properties);
+export const inputReset = (...properties) => {
+    return input({ className: 'inputReset', type: 'reset' }, ...properties);
 }
 
 /**
@@ -149,8 +149,8 @@ export const InputReset = (...properties) => {
     @param properties property object list.
     @return input search element.
  */
-export const InputSearch = (...properties) => {
-    return Input({ className: 'InputSearch', type: 'search' }, ...properties);
+export const inputSearch = (...properties) => {
+    return input({ className: 'inputSearch', type: 'search' }, ...properties);
 }
 
 /**
@@ -158,8 +158,8 @@ export const InputSearch = (...properties) => {
     @param properties property object list.
     @return input submit element.
  */
-export const InputSubmit = (...properties) => {
-    return Input({ className: 'InputSubmit', type: 'submit' }, ...properties);
+export const inputSubmit = (...properties) => {
+    return input({ className: 'inputSubmit', type: 'submit' }, ...properties);
 }
 
 /**
@@ -167,8 +167,8 @@ export const InputSubmit = (...properties) => {
     @param properties property object list.
     @return input tel element.
  */
-export const InputTel = (...properties) => {
-    return Input({ className: 'InputTel', type: 'tel' }, ...properties);
+export const inputTel = (...properties) => {
+    return input({ className: 'inputTel', type: 'tel' }, ...properties);
 }
 
 /**
@@ -176,8 +176,8 @@ export const InputTel = (...properties) => {
     @param properties property object list.
     @return input text element.
  */
-export const InputText = (...properties) => {
-    return Input({ className: 'InputText', type: 'text' }, ...properties);
+export const inputText = (...properties) => {
+    return input({ className: 'inputText', type: 'text' }, ...properties);
 }
 
 /**
@@ -185,8 +185,8 @@ export const InputText = (...properties) => {
     @param properties property object list.
     @return input time element.
  */
-export const InputTime = (...properties) => {
-    return Input({ className: 'InputTime', type: 'time' }, ...properties);
+export const inputTime = (...properties) => {
+    return input({ className: 'inputTime', type: 'time' }, ...properties);
 }
 
 /**
@@ -194,8 +194,8 @@ export const InputTime = (...properties) => {
     @param properties property object list.
     @return input url element.
  */
-export const InputUrl = (...properties) => {
-    return Input({ className: 'InputUrl', type: 'url' }, ...properties);
+export const inputUrl = (...properties) => {
+    return input({ className: 'inputUrl', type: 'url' }, ...properties);
 }
 
 /**
@@ -203,6 +203,6 @@ export const InputUrl = (...properties) => {
     @param properties property object list.
     @return input week element.
  */
-export const InputWeek = (...properties) => {
-    return Input({ className: 'InputWeek', type: 'week' }, ...properties);
+export const inputWeek = (...properties) => {
+    return input({ className: 'inputWeek', type: 'week' }, ...properties);
 }
