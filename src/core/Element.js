@@ -324,8 +324,49 @@ function redecorateFunction() {
     }
 }
 
+//the element constructor function
+function elementConstructorFunction() {
+    //define new properties
+    defineValueProperty(this, 'state', 0, setState);
+    defineValueProperty(this, 'treeState', 0);
+    defineInterfaceProperty(this, 'highlighted', getHighlightedState, setHighlightedState);
+    defineValueProperty(this, 'highlightable', false, setHighlightable);
+    defineInterfaceProperty(this, 'pressed', getPressedState, setPressedState);
+    defineValueProperty(this, 'pressable', false, setPressable);
+    defineInterfaceProperty(this, 'selected', getSelectedState, setSelectedState);
+    defineInterfaceProperty(this, 'invalid', getInvalidState, setInvalidState);
+    defineInterfaceProperty(this, 'focused', getFocusedState, setFocusedState);
+    defineValueProperty(this, 'focusable', false, setFocusable);
+    defineValueProperty(this, 'theme', undefined, setTheme);
+    defineInterfaceProperty(this, 'classList', getClassList, setClassList);
+    
+    //define enabled property which is the opposite of disabled property
+    defineInterfaceProperty(this, 'enabled', getEnabledState, setEnabledState);
+    
+    //if the this does not have a disabled property, then add one which sets its state to DISABLED.
+    const hasDisabled = 'disabled' in this;
+    Object.defineProperty(this, '_hasDisabled', { configurable: false, enumerable: false, value: hasDisabled, writable: false });
+    if (!hasDisabled) {
+        defineInterfaceProperty(this, 'disabled', getDisabledState, setDisabledState);
+    }
+    
+    //add a containsElement function
+    this.containsElement = containsElementFunction;
+    
+    //define custom focus and blur functions that work on containers
+    const originalFocus = this.focus;
+    Object.defineProperty(this, '_originalFocus', { configurable: false, enumerable: false, value: originalFocus, writable: false });
+    const originalBlur = this.blur;
+    Object.defineProperty(this, '_originalBlur', { configurable: false, enumerable: false, value: originalBlur, writable: false });
+    this.focus = focusFunction;
+    this.blur = blurFunction;
+    
+    //define the redecorate function
+    this.redecorate = redecorateFunction;
+}
+
 /**
-    Element constructor.
+    Creates an element.
     
     <h3>Properties</h3>
 
@@ -388,7 +429,7 @@ function redecorateFunction() {
         - redecorate():
             If the element has a theme associated with it, then the theme is invoked to redecorate the element,
             in the element's current tree state.
-          
+            
     <h3>Callbacks</h3>
 
     The following optional callback methods are available:
@@ -477,9 +518,10 @@ function redecorateFunction() {
             - attributes: points to an object that contains key/value pairs to be added as attributes to the element.
             
             - children: array of children; they are added to the element in the order they exist in the array.
+                The function element.append is used to add children, therefore children can be strings.
             
-            - constructor: reference to function with signature (element) : void. 
-                Provided so as that an element is initialized before the properties are set.
+            - constructor: reference to function with signature <code>() => void.</code>
+                Provided so as that an element can be constructed before its properties are set from the property objects.
             
             - className: Name of the class that the properties object represents.
                 It is added to the element's classname, if it exists.
@@ -492,51 +534,14 @@ function redecorateFunction() {
     
  */
 export const Element = (element, ...properties) => {
-    //define new properties
-    defineValueProperty(element, 'state', 0, setState);
-    defineValueProperty(element, 'treeState', 0);
-    defineInterfaceProperty(element, 'highlighted', getHighlightedState, setHighlightedState);
-    defineValueProperty(element, 'highlightable', false, setHighlightable);
-    defineInterfaceProperty(element, 'pressed', getPressedState, setPressedState);
-    defineValueProperty(element, 'pressable', false, setPressable);
-    defineInterfaceProperty(element, 'selected', getSelectedState, setSelectedState);
-    defineInterfaceProperty(element, 'invalid', getInvalidState, setInvalidState);
-    defineInterfaceProperty(element, 'focused', getFocusedState, setFocusedState);
-    defineValueProperty(element, 'focusable', false, setFocusable);
-    defineValueProperty(element, 'theme', undefined, setTheme);
-    defineInterfaceProperty(element, 'classList', getClassList, setClassList);
+    //construct the element and set the constructor
+    elementConstructorFunction.apply(element);
+    element.constructor = elementConstructorFunction;
     
-    //define enabled property which is the opposite of disabled property
-    defineInterfaceProperty(element, 'enabled', getEnabledState, setEnabledState);
-    
-    //if the element does not have a disabled property, then add one which sets its state to DISABLED.
-    const hasDisabled = 'disabled' in element;
-    Object.defineProperty(element, '_hasDisabled', { configurable: false, enumerable: false, value: hasDisabled, writable: false });
-    if (!hasDisabled) {
-        defineInterfaceProperty(element, 'disabled', getDisabledState, setDisabledState);
-    }
-    
-    //add a containsElement function
-    element.containsElement = containsElementFunction;
-    
-    //define custom focus and blur functions that work on containers
-    const originalFocus = element.focus;
-    Object.defineProperty(element, '_originalFocus', { configurable: false, enumerable: false, value: originalFocus, writable: false });
-    const originalBlur = element.blur;
-    Object.defineProperty(element, '_originalBlur', { configurable: false, enumerable: false, value: originalBlur, writable: false });
-    element.focus = focusFunction;
-    element.blur = blurFunction;
-    
-    //define the redecorate function
-    element.redecorate = redecorateFunction;
-    
-    //invoke constructors
+    //init object
     for(const propertiesObject of properties) {
-        propertiesObject.constructor?.(element);
-    }
-    
-    //init properties
-    for(const propertiesObject of properties) {
+        propertiesObject.constructor?.apply(element);
+        
         for(const propertyKey in propertiesObject) {
             const propertyValue = propertiesObject[propertyKey];
             
@@ -549,12 +554,16 @@ export const Element = (element, ...properties) => {
                     
                 case 'children':
                     for(const child of propertyValue) {
-                        element.appendChild(child);
+                        element.append(child);
                     }
                     break;
                     
-                //ignored; invoked above, before setting properties
                 case 'constructor':
+                    const existingConstructor = element.constructor;
+                    element.constructor = function () {
+                        existingConstructor.apply(this);
+                        propertyValue.apply(this);
+                    };
                     break;
                     
                 case 'className':
