@@ -11,7 +11,7 @@ const theme1 = {
     }
 }
 
-document.body.theme = theme1;
+document.html.theme = theme1;
 
 div({
     parent: document.body,

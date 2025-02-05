@@ -602,18 +602,11 @@ export const Element = (element, ...properties) => {
     return element;
 }
 
-//set the html element to be 100% size, since this api is for UI applications
-document.documentElement.style.width = '100%';
-document.documentElement.style.height = '100%';
-document.documentElement.style.overflow = 'hidden';
-document.documentElement.style.boxSizing = 'border-box';
-
-
-//initialize the document body as an Element, in order to:
+//initialize the document element (html) as an Element, in order to:
 //a) make it have the additional functionalities elements have,
-//b) make it full screen, as the html element
-Element(document.body, { 
-    className: 'document.body',
+//b) make it full screen
+Element(document.documentElement, { 
+    className: 'html',
     style: { 
         width: '100%',
         height: '100%',
@@ -621,6 +614,25 @@ Element(document.body, {
         margin: 0
     } 
 });
+
+//since document has property 'body', it shall also have property 'html'
+document.html = document.documentElement;
+
+//initialize the document body as an Element, in order to:
+//a) make it have the additional functionalities elements have,
+//b) make it full screen
+Element(document.body, { 
+    className: 'body',
+    style: { 
+        width: '100%',
+        height: '100%',
+        overflow: 'hidden',
+        margin: 0
+    } 
+});
+
+//since document has property 'body', document.html shall have property body
+document.html.body = document.body;
 
 //add a global style for all elements;
 //the box-sizing must be border-box, as it makes size calculations much easier;
