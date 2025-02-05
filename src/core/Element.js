@@ -77,13 +77,14 @@ const setState = (element, newState) => {
     }
 }
 
-//setup an observer that changes a UI tree's treeState flags, based on parent/child relationship
-const observer = new MutationObserver((mutationList, observer) => {
+//mutation observer callback
+const mutationObserverCallback = (mutationList, observer) => {
     for (const mutation of mutationList) {
         if (mutation.type === 'childList') {
             mutation.addedNodes.forEach((node) => {
                 if (node.nodeType === Node.ELEMENT_NODE) {
                     updateTreeState(node, node.parentElement._treeState);
+                    node.theme = node.parentElement.theme;
                 }
             });
             mutation.removedNodes.forEach((node) => {
@@ -99,8 +100,14 @@ const observer = new MutationObserver((mutationList, observer) => {
             }
         }
     }
-});
-observer.observe(document.body, { attributes: true, attributeFilter: ['disabled'], childList: true, subtree: true });
+};
+
+//mutation observer options
+const mutationObserverOptions = { attributes: true, attributeFilter: ['disabled'], childList: true, subtree: false };
+
+//monitor element for changes
+const UITreeObserver = new MutationObserver(mutationObserverCallback);
+UITreeObserver.observe(document.body, mutationObserverOptions);
 
 //defines a pair of properties, a private part and a public part;
 //the private part contains the value, the public part is the interface
@@ -363,6 +370,9 @@ function elementConstructorFunction() {
     
     //define the redecorate function
     this.redecorate = redecorateFunction;
+    
+    //monitor this element for changes
+    UITreeObserver.observe(this, mutationObserverOptions);
 }
 
 /**
@@ -603,6 +613,7 @@ document.documentElement.style.boxSizing = 'border-box';
 //a) make it have the additional functionalities elements have,
 //b) make it full screen, as the html element
 Element(document.body, { 
+    className: 'document.body',
     style: { 
         width: '100%',
         height: '100%',

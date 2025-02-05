@@ -1,17 +1,29 @@
-import { State } from './src/core/State.js';
-import { Element } from './src/core/Element.js';
-import { anchor } from './src/html/anchor.js';
+import { Element } from './src/core.js';
+import { anchor,div, p, span } from './src/html.js';
 
 function testAnchorConstructor() {
     console.log("testAnchorConstructor: this:", this);
 }
 
-const testAnchor = anchor({ constructor: testAnchorConstructor, parent: document.body, href:"http://www.wikipedia.org", text: "Wikipedia" });
-
 const theme1 = {
     decorateElement(element, treeState) {
-        element.style.backgroundColor = 'red';
+        element.style.backgroundColor = 'lightcyan';
     }
 }
 
 document.body.theme = theme1;
+
+div({
+    parent: document.body,
+    children: [
+        p({
+            children: [
+                'here is a link to: ',
+                anchor({ constructor: testAnchorConstructor, href:"http://www.wikipedia.org", text: "Wikipedia" }),
+                span({
+                    children: ['; click it!']
+                })
+            ]
+        })
+    ]
+});

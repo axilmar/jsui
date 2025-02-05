@@ -8,4 +8,3 @@ import { Element } from '../core/Element.js';
 export const article = (...properties) => {
     return Element(document.createElement('article'), { className: 'article' }, ...properties);
 }
-
