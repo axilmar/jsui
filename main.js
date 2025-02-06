@@ -1,13 +1,11 @@
-import { Element } from './src/core.js';
-import { anchor,div, p, span } from './src/html.js';
-
-function testAnchorConstructor() {
-    console.log("testAnchorConstructor: this:", this);
-}
+import { anchor, div, span, text } from './src/html.js';
+import { HorizontalLayout, VerticalLayout, FlexibleLayout, combineLayouts } from './src/layout.js';
 
 const theme1 = {
     decorateElement(element, treeState) {
-        element.style.backgroundColor = 'lightcyan';
+        if (element === document.body) {
+            element.style.backgroundColor = 'lightcyan';
+        }
     }
 }
 
@@ -15,15 +13,23 @@ document.html.theme = theme1;
 
 div({
     parent: document.body,
+    style: { backgroundColor: 'lightgreen' },
+    layout: HorizontalLayout(),
     children: [
-        p({
+        div({ children: 'here is a link to: ' }),
+        anchor({ href:"http://www.wikipedia.org", text: "Wikipedia" }),
+        div({ 
+            style: { backgroundColor: 'yellow' },
+            layout: combineLayouts(VerticalLayout(), FlexibleLayout()), 
             children: [
-                'here is a link to: ',
-                anchor({ constructor: testAnchorConstructor, href:"http://www.wikipedia.org", text: "Wikipedia" }),
-                span({
-                    children: ['; click it!']
-                })
+                div({children: [ 'text1' ]}),
+                div({children: [ 'text2' ]})
             ]
-        })
+        }),
+        div({
+            layout: VerticalLayout(),
+            children: [div({ children: ' *click it* '}), div({children:' *some text* '})]
+        }),
+        text(' the quick brown fox')
     ]
 });

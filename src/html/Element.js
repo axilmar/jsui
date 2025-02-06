@@ -283,7 +283,12 @@ const setAttributes = (element, attributes) => {
 
 //set the children
 const setChildren = (element, children) => {
-    element.replaceChildren(...children);
+    if (Array.isArray(children)) {
+        element.replaceChildren(...children);
+    }
+    else {
+        element.replaceChildren(children);        
+    }
 }
 
 //get parent

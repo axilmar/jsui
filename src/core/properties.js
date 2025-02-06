@@ -5,8 +5,10 @@
     @param name property name.
     @param value initial value.
     @param setter optional property setter; signature: (object, value) => void.
+        If undefined, then the internal property is set directly.
+        If null, then it is a read-only property.
  */
-export const defineValueProperty = (object, name, value, setter) => {
+export const defineValueProperty = (object, name, value, setter = undefined) => {
     const privateName = '_' + name;
     
     //define the private part
@@ -25,6 +27,14 @@ export const defineValueProperty = (object, name, value, setter) => {
             get() { return this[privateName]; },
             set(newValue) { setter(this, newValue); }
         });
+    }
+    else if (setter === undefined) {
+        Object.defineProperty(object, name, {
+            configurable: true,
+            enumerable: true,
+            get() { return this[privateName]; },
+            set(newValue) { this[privateName] = newValue; }
+        });        
     }
     else {
         Object.defineProperty(object, name, {

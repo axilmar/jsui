@@ -1,5 +1,10 @@
 import { Object } from '../core/Object.js';
 
-const Layout = (...properties) => {
-    
+/**
+    Layout constructor.
+    @param properties properties objects.
+    @return layout object.
+ */
+export const Layout = (...properties) => {
+    return Object({}, { className: 'Layout' }, ...properties);
 }
