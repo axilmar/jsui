@@ -25,7 +25,16 @@ function sizedLayoutConstructor() {
 
 /**
     Sized layout constructor.
-    A spacing layout takes a specific width and height (or size, to change both properties at once).
+    A spacing layout takes a specific width / height.
+    
+    <h3>Properties</H3>
+    
+    The following custom properties are defined:
+
+        - width: width; e.g. '32px', '100%' etc. Any css value for the same css property.
+        - height: height; e.g. '32px', '100%' etc. Any css value for the same css property.
+        - size: sets both width and height to the same value.
+    
     @param properties properties objects.
     @return layout object.
  */

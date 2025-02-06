@@ -2,6 +2,8 @@ import { Layout } from './Layout.js';
 
 //constructor
 function verticalLayoutConstructor() {
+    this.display = 'flex';
+    this.flexDirection = 'column';
     this.alignItems = 'center';
     
     //set the apply function
@@ -11,8 +13,6 @@ function verticalLayoutConstructor() {
                 element.style[propertyName] = this[propertyName];
             }
         }
-        element.style.display = 'flex';
-        element.style.flexDirection = 'column';
     }
 }
 

@@ -1,5 +1,5 @@
 import { anchor, div, span, text } from './src/html.js';
-import { HorizontalLayout, VerticalLayout, FlexibleLayout, combineLayouts, SizedLayout } from './src/layout.js';
+import { HorizontalLayout, VerticalLayout, FlexibleLayout, combineLayouts, SizedLayout, GridLayout } from './src/layout.js';
 
 const theme1 = {
     decorateElement(element, treeState) {
@@ -35,5 +35,36 @@ div({
             children: [div({ children: ' *click it* '}), div({children:' *some text* '})]
         }),
         text(' the quick brown fox')
+    ]
+});
+
+/*
+const gl1 = GridLayout({columns: 3});
+console.log(gl1.columns);
+
+const gl2 = GridLayout({columns: 'repeat(3, 1fr)'});
+console.log(gl2.columns);
+
+const gl3 = GridLayout({columns: '[col1] 30px [col2] 40px 50px'});
+console.log(gl3.columns);
+
+const gl4 = GridLayout({columns: [{name: 'col1', value: '10px'}, '20px', {name: 'col3', value: '30px'}]});
+console.log(gl4);
+console.log(gl4.columns);
+*/
+
+div({
+    parent: document.body,
+    style: { backgroundColor: 'orange' },
+    layout: GridLayout({columns: 3}),
+    children: [
+        div({children: 'cell 1'}),
+        div({children: 'cell 2'}),
+        div({children: 'cell 3'}),
+        div({children: 'cell 4'}),
+        div({children: 'cell 5'}),
+        div({children: 'cell 6'}),
+        div({children: 'cell 7'}),
+        div({children: 'cell 8'}),
     ]
 });

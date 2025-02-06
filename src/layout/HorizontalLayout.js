@@ -2,6 +2,8 @@ import { Layout } from './Layout.js';
 
 //constructor
 function horizontalLayoutConstructor() {
+    this.display = 'flex';
+    this.flexDirection = 'row';
     this.alignItems = 'center';
     
     //set the apply function
@@ -11,8 +13,6 @@ function horizontalLayoutConstructor() {
                 element.style[propertyName] = this[propertyName];
             }
         }
-        element.style.display = 'flex';
-        element.style.flexDirection = 'row';
     }
 }
 
