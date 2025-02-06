@@ -1,4 +1,4 @@
-import { Element } from '../core/Element.js';
+import { Element } from './Element.js';
 
 /**
     Creates an option element (html 'option' tag).

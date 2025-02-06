@@ -1,4 +1,4 @@
-import { Element } from '../core/Element.js';
+import { Element } from './Element.js';
 
 /**
     Creates a tfoot element (html 'tfoot' tag).

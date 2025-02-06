@@ -1,3 +1,5 @@
+import { Object as JSUIObject } from '../core/Object.js';
+import { defineValueProperty, defineInterfaceProperty } from '../core/properties.js';
 import { State } from './State.js';
 
 //computes a new flags value
@@ -107,67 +109,10 @@ const mutationObserverOptions = { attributes: true, attributeFilter: ['disabled'
 
 //monitor element for changes
 const UITreeObserver = new MutationObserver(mutationObserverCallback);
+
+//observe the predefined elements for changes
+UITreeObserver.observe(document.documentElement, mutationObserverOptions);
 UITreeObserver.observe(document.body, mutationObserverOptions);
-
-//defines a pair of properties, a private part and a public part;
-//the private part contains the value, the public part is the interface
-const defineValueProperty = (element, name, value, setter) => {
-    const privateName = '_' + name;
-    
-    //define the private part
-    Object.defineProperty(element, privateName, {
-        configurable: false,
-        enumerable: false,
-        value: value,
-        writable: true
-    });
-    
-    //define the public part
-    if (setter) {
-        Object.defineProperty(element, name, {
-            configurable: false,
-            enumerable: true,
-            get() { return this[privateName]; },
-            set(newValue) { setter(this, newValue); }
-        });
-    }
-    else {
-        Object.defineProperty(element, name, {
-            configurable: false,
-            enumerable: true,
-            get() { return this[privateName]; }
-        });        
-    }
-}
-
-//defines a single property, which invokes the specific getters and setters
-const defineInterfaceProperty = (element, name, getter, setter) => {
-    if (getter && setter) {
-        Object.defineProperty(element, name, {
-            configurable: false,
-            enumerable: true,
-            get() { return getter(this); },
-            set(newValue) { setter(this, newValue); }
-        });
-    }
-    else if (getter) {
-        Object.defineProperty(element, name, {
-            configurable: false,
-            enumerable: true,
-            get() { return getter(this); }
-        });        
-    }
-    else if (setter) {        
-        Object.defineProperty(element, name, {
-            configurable: false,
-            enumerable: true,
-            set(newValue) { setter(this, newValue); }
-        });        
-    }
-    else {
-        throw new Error('Invalid interface property definition; both getter and setter are undefined/null.');
-    }
-}
 
 //get/set highlighted state
 const getHighlightedState = (element) => hasFlags(element._state, State.HIGHLIGHTED);
@@ -314,20 +259,43 @@ function blurFunction() {
     }
 }
 
-//returns the class list of an element 
-const getClassList = (element) => {
-    return element.className.split(' ');
-}
-
-//sets the class list of an element
-const setClassList = (element, classes) => {
-    element.className = classes.join(' ');
+//set the element's layout
+const setLayout = (element, newLayout) => {
+    element._layout = newLayout;
+    if (newLayout) {
+        newLayout.apply(element);
+    }
 }
 
 //the redecorate function
 function redecorateFunction() {
     if (this._theme) {
         redecorateElement(element, element._treeState, element._treeState);
+    }
+}
+
+//set the attributes
+const setAttributes = (element, attributes) => {
+    for(const attribute of attributes) {
+        element.setAttribute(attribute.name, attribute.value);
+    }
+}
+
+//set the children
+const setChildren = (element, children) => {
+    element.replaceChildren(...children);
+}
+
+//get parent
+const getParent = (element) => element.parentElement;
+
+//set parent
+const setParent = (element, parent) => parent.append(element);
+
+//set the style
+const setStyle = (element, style) => {
+    for(const stylePropertyName in style) {
+        element.style[stylePropertyName] = style[stylePropertyName];
     }
 }
 
@@ -345,7 +313,7 @@ function elementConstructorFunction() {
     defineInterfaceProperty(this, 'focused', getFocusedState, setFocusedState);
     defineValueProperty(this, 'focusable', false, setFocusable);
     defineValueProperty(this, 'theme', undefined, setTheme);
-    defineInterfaceProperty(this, 'classList', getClassList, setClassList);
+    defineValueProperty(this, 'layout', undefined, setLayout);
     
     //define enabled property which is the opposite of disabled property
     defineInterfaceProperty(this, 'enabled', getEnabledState, setEnabledState);
@@ -373,6 +341,21 @@ function elementConstructorFunction() {
     
     //monitor this element for changes
     UITreeObserver.observe(this, mutationObserverOptions);
+    
+    //define the attributes property
+    const attributes = this.attributes;
+    defineInterfaceProperty(this, 'attributes', () => attributes, setAttributes);
+    
+    //define the children property
+    const children = this.children;
+    defineInterfaceProperty(this, 'children', () => children, setChildren);
+    
+    //define the parent property
+    defineInterfaceProperty(this, 'parent', getParent, setParent);    
+    
+    //define the style property
+    const style = this.style;
+    defineInterfaceProperty(this, 'style', () => style, setStyle);    
 }
 
 /**
@@ -419,8 +402,19 @@ function elementConstructorFunction() {
         - theme: when set, an element is decorated by the given theme; decoration happens according to class list 
           and object type of an element. Undefined by default.
           
-        - classList: It changes the property to be readable/writable instead of read-only: by setting it to an array of strings,
-            the property className is set to a string that contains the elements of the array joined with space as a separator.
+        - layout: It allows an element to have a layout algorithm applied to them. 
+            The layout object must have the method <code>apply(element)</code>.
+            
+        - attributes: It makes the attributes property writable; if assigned a set of key/value pairs,
+            then the element's 'setAttribute' method is invoked for each pair.
+            
+        - children: makes the property read/write. When set, all the existing children are removed,
+            and the new set of children are added from the given array.
+            
+        - parent: synonymous to parentElement; when set, the child is appended to the parent.
+        
+        - style: makes the style property writable; when set, the internal style object of the element
+            is assigned the properties of the object.
       
     <h3>Methods</h3>
 
@@ -513,93 +507,13 @@ function elementConstructorFunction() {
             { className: 'div2', constructor: div2_constructor, style: { display: flex, alignItems: 'center' }, children: [ document.createElement('input') ]},
             );
         
-    @param element element to construct.
-    
+    @param element element to construct.    
     @param properties array of objects with element properties. 
-    
-        Each properties object shall contain key/value pairs of element properties.
-    
-        Multiple properties objects are allowed in order to have one properties object per 'class'.
-    
-        Properties objects are processed in the order they exist into the array.
-    
-        The following special properties per property object are recognized:
-        
-            - attributes: points to an object that contains key/value pairs to be added as attributes to the element.
-            
-            - children: array of children; they are added to the element in the order they exist in the array.
-                The function element.append is used to add children, therefore children can be strings.
-            
-            - constructor: reference to function with signature <code>() => void.</code>
-                Provided so as that an element can be constructed before its properties are set from the property objects.
-            
-            - className: Name of the class that the properties object represents.
-                It is added to the element's classname, if it exists.
-                
-            - parent/parentElement: adds the current element to the given parent element, via appendChild.
-            
-            - style: points to an object that contains key/value pairs to be set as properties of the element's style object.
-        
     @return the element.
     
  */
 export const Element = (element, ...properties) => {
-    //construct the element and set the constructor
-    elementConstructorFunction.apply(element);
-    element.constructor = elementConstructorFunction;
-    
-    //init object
-    for(const propertiesObject of properties) {
-        propertiesObject.constructor?.apply(element);
-        
-        for(const propertyKey in propertiesObject) {
-            const propertyValue = propertiesObject[propertyKey];
-            
-            switch (propertyKey) {
-                case 'attributes':
-                    for(const attributeKey in propertyValue) {
-                        element.setAttribute(attributeKey, propertyValue[attributeKey]);
-                    }
-                    break;
-                    
-                case 'children':
-                    for(const child of propertyValue) {
-                        element.append(child);
-                    }
-                    break;
-                    
-                case 'constructor':
-                    const existingConstructor = element.constructor;
-                    element.constructor = function () {
-                        existingConstructor.apply(this);
-                        propertyValue.apply(this);
-                    };
-                    break;
-                    
-                case 'className':
-                    const currentClassName = element.className;
-                    const separator = currentClassName?.length > 0 ? ' ' : '';
-                    element.className = currentClassName + separator + propertyValue;
-                    break;
-                    
-                case 'parent':
-                case 'parentElement':
-                    propertyValue.appendChild(element);
-                    break;
-                    
-                case 'style':
-                    for(const stylePropertyKey in propertyValue) {
-                        element.style[stylePropertyKey] = propertyValue[stylePropertyKey];
-                    }
-                    break;
-                    
-                default:
-                    element[propertyKey] = propertyValue;
-            }
-        }
-    }
-    
-    return element;
+    return JSUIObject(element, { constructor: elementConstructorFunction, className: 'Element' }, ...properties);
 }
 
 //initialize the document element (html) as an Element, in order to:
