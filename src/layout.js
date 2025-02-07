@@ -1,3 +1,4 @@
+export * from './layout/Layout.js';
 export * from './layout/HorizontalLayout.js';
 export * from './layout/VerticalLayout.js';
 export * from './layout/FlexibleLayout.js';
