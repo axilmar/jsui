@@ -6,12 +6,12 @@
     For example, a UI element that is highlighted and pressed, is in state 
     
     @example
-    State.HIGHLIGHTED + State.PRESSED
+    StateFlags.HIGHLIGHTED + StateFlags.PRESSED
         
     @readonly
     @enum {number}
  */
-export const State = Object.freeze({
+export const StateFlags = Object.freeze({
     /** Disabled state. The element does not accept input. */
     DISABLED   : 1,
     
@@ -30,6 +30,6 @@ export const State = Object.freeze({
     /** Focused state. The element has or is related to the input focus. */
     FOCUSED    : 32,
     
-    /** Custom state. First state available to custom components. */
+    /** first flag value available for external code. */
     CUSTOM     : 64
 });

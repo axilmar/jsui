@@ -46,7 +46,7 @@ export * from './html/q.js';
 export * from './html/select.js';
 export * from './html/source.js';
 export * from './html/span.js';
-export * from './html/State.js';
+export * from './html/StateFlags.js';
 export * from './html/table.js';
 export * from './html/tbody.js';
 export * from './html/td.js';

@@ -1,6 +1,7 @@
 import { Object as JSUIObject } from '../core/Object.js';
 import { defineValueProperty, defineInterfaceProperty } from '../core/properties.js';
-import { State } from './State.js';
+import { StateFlags } from './StateFlags.js';
+import { UpdateFlags } from './UpdateFlags.js';
 
 //computes a new flags value
 const computeFlags = (existingValue, newValue, set) => {
@@ -53,7 +54,7 @@ const setTreeState = (element, treeState) => {
         const oldTreeState = element._treeState;
         element._treeState = newTreeState;
         if (element._hasDisabled) {
-            element.disabled = hasFlags(element._treeState, State.DISABLED);
+            element.disabled = hasFlags(element._treeState, StateFlags.DISABLED);
         }
         redecorateElement(element, oldTreeState, element._treeState);
         element.onTreeStateChanged?.(oldTreeState, element._treeState);
@@ -98,7 +99,7 @@ const mutationObserverCallback = (mutationList, observer) => {
         else if (mutation.type === 'attributes') {
             if (mutation.attributeName === 'disabled') {
                 const element = mutation.target;
-                setState(element, computeFlags(element._state, State.DISABLED, element.disabled));
+                setState(element, computeFlags(element._state, StateFlags.DISABLED, element.disabled));
             }
         }
     }
@@ -115,8 +116,8 @@ UITreeObserver.observe(document.documentElement, mutationObserverOptions);
 UITreeObserver.observe(document.body, mutationObserverOptions);
 
 //get/set highlighted state
-const getHighlightedState = (element) => hasFlags(element._state, State.HIGHLIGHTED);
-const setHighlightedState = (element, newValue) => setState(element, computeFlags(element._state, State.HIGHLIGHTED, newValue));
+const getHighlightedState = (element) => hasFlags(element._state, StateFlags.HIGHLIGHTED);
+const setHighlightedState = (element, newValue) => setState(element, computeFlags(element._state, StateFlags.HIGHLIGHTED, newValue));
 
 //the mouse enter handler turns the highlighted state to true
 function mouseEnterHandler(event) {
@@ -144,8 +145,8 @@ const setHighlightable = (element, newValue) => {
 }
 
 //get/set pressed state
-const getPressedState = (element) => hasFlags(element._state, State.PRESSED);
-const setPressedState = (element, newValue) => setState(element, computeFlags(element._state, State.PRESSED, newValue));
+const getPressedState = (element) => hasFlags(element._state, StateFlags.PRESSED);
+const setPressedState = (element, newValue) => setState(element, computeFlags(element._state, StateFlags.PRESSED, newValue));
 
 //the mouse down handler turns the pressed state to true
 function mouseDownHandler(event) {
@@ -168,16 +169,16 @@ const setPressable = (element, newValue) => {
 }
 
 //get/set selected state
-const getSelectedState = (element) => hasFlags(element._state, State.SELECTED);
-const setSelectedState = (element, newValue) => setState(element, computeFlags(element._state, State.SELECTED, newValue));
+const getSelectedState = (element) => hasFlags(element._state, StateFlags.SELECTED);
+const setSelectedState = (element, newValue) => setState(element, computeFlags(element._state, StateFlags.SELECTED, newValue));
 
 //get/set invalid state
-const getInvalidState = (element) => hasFlags(element._state, State.INVALID);
-const setInvalidState = (element, newValue) => setState(element, computeFlags(element._state, State.INVALID, newValue));
+const getInvalidState = (element) => hasFlags(element._state, StateFlags.INVALID);
+const setInvalidState = (element, newValue) => setState(element, computeFlags(element._state, StateFlags.INVALID, newValue));
 
 //get/set focused state
-const getFocusedState = (element) => hasFlags(element._state, State.FOCUSED);
-const setFocusedState = (element, newValue) => setState(element, computeFlags(element._state, State.FOCUSED, newValue));
+const getFocusedState = (element) => hasFlags(element._state, StateFlags.FOCUSED);
+const setFocusedState = (element, newValue) => setState(element, computeFlags(element._state, StateFlags.FOCUSED, newValue));
 
 //the focusin handler turns the focused state to true
 function focusInHandler(event) {
@@ -222,8 +223,8 @@ const getEnabledState = (element) => !element.disabled;
 const setEnabledState = (element, newValue) => element.disabled = !newValue;
 
 //get/set disabled state (only for elements that do not have a native 'disabled' property)
-const getDisabledState = (element) => hasFlags(element._state, State.DISABLED);
-const setDisabledState = (element, newValue) => setState(element, computeFlags(element._state, State.DISABLED, newValue));
+const getDisabledState = (element) => hasFlags(element._state, StateFlags.DISABLED);
+const setDisabledState = (element, newValue) => setState(element, computeFlags(element._state, StateFlags.DISABLED, newValue));
 
 //the contains element function
 function containsElementFunction(subElement) {
@@ -267,13 +268,6 @@ const setLayout = (element, newLayout) => {
     }
 }
 
-//the redecorate function
-function redecorateFunction() {
-    if (this._theme) {
-        redecorateElement(element, element._treeState, element._treeState);
-    }
-}
-
 //set the attributes
 const setAttributes = (element, attributes) => {
     for(const attribute of attributes) {
@@ -302,6 +296,51 @@ const setStyle = (element, style) => {
     for(const stylePropertyName in style) {
         element.style[stylePropertyName] = style[stylePropertyName];
     }
+}
+
+//the updateTheme function
+function updateThemeFunction() {
+    if (this._theme) {
+        redecorateElement(this, this._treeState, this._treeState);
+    }     
+}
+
+//the update tree theme function
+function updateTreeThemeFunction() {
+    this.updateTheme();
+    forEachChild(this, (child) => child.updateTreeTheme());
+}
+
+//the update layout function
+function updateLayoutFunction() {
+    if (this._layout) {
+        this._layout.apply(this);
+    }     
+}
+
+//the update tree layout function
+function updateTreeLayoutFunction() {
+    this.updateLayout();
+    forEachChild(this, (child) => child.updateTreeLayout());
+}
+
+//the update function
+function updateFunction(updateFlags = UpdateFlags.ALL) {
+    //update for theme
+    if (updateFlags & UpdateFlags.THEME) {
+        this.updateTheme();
+    } 
+    
+    //update for layout
+    if (updateFlags & UpdateFlags.LAYOUT) {
+        this.updateLayout();
+    } 
+}
+
+//the update tree function
+function updateTreeFunction(updateFlags = UpdateFlags.ALL) {
+    this.update(updateFlags);
+    forEachChild(this, (child) => child.updateTree(updateFlags));
 }
 
 //the element constructor function
@@ -341,9 +380,6 @@ function elementConstructorFunction() {
     this.focus = focusFunction;
     this.blur = blurFunction;
     
-    //define the redecorate function
-    this.redecorate = redecorateFunction;
-    
     //monitor this element for changes
     UITreeObserver.observe(this, mutationObserverOptions);
     
@@ -360,7 +396,15 @@ function elementConstructorFunction() {
     
     //define the style property
     const style = this.style;
-    defineInterfaceProperty(this, 'style', () => style, setStyle);    
+    defineInterfaceProperty(this, 'style', () => style, setStyle);
+    
+    //add methods for updating an element
+    this.updateTheme = updateThemeFunction;
+    this.updateLayout = updateLayoutFunction;
+    this.updateTreeTheme = updateTreeThemeFunction;
+    this.updateTreeLayout = updateTreeLayoutFunction;
+    this.update = updateFunction;
+    this.updateTree = updateTreeFunction;
 }
 
 /**
@@ -370,7 +414,7 @@ function elementConstructorFunction() {
 
     The following properties are added to an element:
     
-        - state: a combination of flags that reflect the state of the element (see State enumeration for possible values). 
+        - state: a combination of flags that reflect the state of the element (see StateFlags enumeration for possible values). 
             0 by default.
         
         - treeState: a read-only value that combines the tree state of the parent element to the state of the element. 
@@ -435,9 +479,26 @@ function elementConstructorFunction() {
             If the target element contains the active element, then blur() is called on the active element.
             Otherwise, nothing happens.
             
-        - redecorate():
+        - updateTheme():
             If the element has a theme associated with it, then the theme is invoked to redecorate the element,
             in the element's current tree state.
+            It should be invoked when the theme of the element is modified.
+            
+        - updateTreeTheme():
+            Invokes updateTheme() for the element and its subtree.
+            
+        - updateLayout():
+            If the element has a layout associated with it, then the layout is invoked to be applied to the element.
+            It should be invoked when the layout of the element is modified.
+            
+        - updateTreeLayout():
+            Invokes updateLayout() for the element and its subtree.
+            
+        - update(updateFlags):
+            Updates the element according to the {@link UpdateFlags}.
+            
+        - updateTree(updateFlags):
+            Updates the element and its subtree according to the {@link UpdateFlags}.
             
     <h3>Callbacks</h3>
 
@@ -453,7 +514,7 @@ function elementConstructorFunction() {
             The parameter 'oldTreeState' is the old tree state of the element.
             The parameter 'newTreeState' is the current tree state of the element.
             
-    <h3>UI Tree Runtime State/Theme Inheritance</h3>
+    <h3>UI Tree Runtime StateFlags/Theme Inheritance</h3>
 
     States of an element are 'inherited' by descendant elements.
     For example, if an anscestor element becomes disabled, then all descentants become disabled.

@@ -15,6 +15,10 @@ function textConstructor() {
 
 /**
     Creates a text node.
+    
+    A text node is not an element node, so an object that is created with 
+    this function does not have Element functionalities.
+    
     @param properties either object properties or the text of the node.
  */
 export const text = (...properties) => {
