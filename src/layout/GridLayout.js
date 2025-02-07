@@ -38,13 +38,18 @@ const getGridTemplateValue = (value) => {
             if (value.length == 2) {
                 value = value[0].split(',');
                 if (value.length == 2) {
-                    const length = Number(value[0].trim());
-                    const type = value[1].trim();
-                    const result = [];
-                    for(let i = 0; i < length; ++i) {
-                        result.push(type);
+                    try {
+                        const length = Number(value[0].trim());
+                        const type = value[1].trim();
+                        const result = [];
+                        for(let i = 0; i < length; ++i) {
+                            result.push(type);
+                        }
+                        return result;
                     }
-                    return result;
+                    catch (e) {
+                        return initialValue;
+                    }
                 }
             }
         }
@@ -168,7 +173,8 @@ function gridLayoutConstructor() {
                 - a string; it sets the 'grid-template-columns' property.
                 - an array that contains column values or {name, value} pairs; it sets the 'grid-template-columns' property from the array concatenation with a space character as a separator.
                 
-            When retrieved, it contains the contents of the property 'grid-template-columns' as an array.
+            When retrieved, it either contains the contents of the property 'grid-template-columns' as an array,
+                or the string value of the 'grid-template-columns' property, if it cannot be converted to an array.
             
         - rows:
         
