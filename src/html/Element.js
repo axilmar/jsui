@@ -324,6 +324,18 @@ function updateTreeLayoutFunction() {
     forEachChild(this, (child) => child.updateTreeLayout());
 }
 
+//the update state function
+function updateStateFunction() {
+    this.onStateChanged?.(this._state, this._state);
+    this.onTreeStateChanged?.(this._treeState, this._treeState);
+}
+
+//the update tree state function
+function updateTreeStateFunction() {
+    this.updateStateFunction();
+    forEachChild(this, (child) => child.updateTreeState());
+}
+
 //the update function
 function updateFunction(updateFlags = UpdateFlags.ALL) {
     //update for theme
@@ -334,6 +346,11 @@ function updateFunction(updateFlags = UpdateFlags.ALL) {
     //update for layout
     if (updateFlags & UpdateFlags.LAYOUT) {
         this.updateLayout();
+    } 
+    
+    //update state
+    if (updateFlags & UpdateFlags.STATE) {
+        this.updateState();
     } 
 }
 
@@ -403,6 +420,8 @@ function elementConstructorFunction() {
     this.updateLayout = updateLayoutFunction;
     this.updateTreeTheme = updateTreeThemeFunction;
     this.updateTreeLayout = updateTreeLayoutFunction;
+    this.updateState = updateStateFunction;
+    this.updateTreeState = updateTreeStateFunction;
     this.update = updateFunction;
     this.updateTree = updateTreeFunction;
 }
@@ -494,8 +513,15 @@ function elementConstructorFunction() {
         - updateTreeLayout():
             Invokes updateLayout() for the element and its subtree.
             
+        - updateState():
+            Invokes the callback functions onStateChanged and onTreeStateChanged.
+            
+        - updateTreeState():
+            Updates the state for the element and its subtree.
+            
         - update(updateFlags):
             Updates the element according to the {@link UpdateFlags}.
+            By default, it updates the theme decorations, the layout and the state, in that order.
             
         - updateTree(updateFlags):
             Updates the element and its subtree according to the {@link UpdateFlags}.

@@ -18,9 +18,12 @@ export const UpdateFlags = Object.freeze({
     /** Reapply the layout because it was changed. */
     LAYOUT : 2,
     
+    /** Invoke the state handlers. */
+    STATE  : 4,
+    
     /** first flag value available for external code. */
-    CUSTOM : 4,
+    CUSTOM : 8,
     
     /** all update flags. */
-    ALL    : 1 + 2,
+    ALL    : 1 + 2 + 4,
 });
