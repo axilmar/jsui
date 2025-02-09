@@ -1,5 +1,5 @@
 import { anchor, div, span, text } from './src/html.js';
-import { HorizontalLayout, VerticalLayout, FlexibleLayout, combineLayouts, SizedLayout, GridLayout } from './src/layout.js';
+import { HorizontalLayout, VerticalLayout, FlexibleLayout, combineLayouts, FixedLayout, GridLayout } from './src/layout.js';
 
 const theme1 = {
     decorateElement(element, treeState) {
@@ -27,7 +27,7 @@ div({
             ]
         }),
         div({
-            layout: SizedLayout({width: '16px', height: '8px'}),
+            layout: FixedLayout({width: '16px', height: '8px'}),
             style: { backgroundColor: 'pink' }
         }),
         div({

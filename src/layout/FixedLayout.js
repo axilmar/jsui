@@ -11,7 +11,7 @@ const setSize = (layout, value) => {
 }
 
 //constructor
-function sizedLayoutConstructor() {
+function fixedLayoutConstructor() {
     this.width = 0;
     this.height = 0;
     defineInterfaceProperty(this, 'size', getSize, setSize);
@@ -24,8 +24,9 @@ function sizedLayoutConstructor() {
 }
 
 /**
-    Sized layout constructor.
-    A spacing layout takes a specific width / height.
+    Fixed layout constructor.
+    
+    A layout that takes a specific width / height.
     
     <h3>Properties</H3>
     
@@ -38,6 +39,6 @@ function sizedLayoutConstructor() {
     @param properties properties objects.
     @return layout object.
  */
-export const SizedLayout = (...properties) => {
-    return Layout({ constructor: sizedLayoutConstructor, className: 'SizedLayout' }, ...properties);
+export const FixedLayout = (...properties) => {
+    return Layout({ constructor: fixedLayoutConstructor, className: 'FixedLayout' }, ...properties);
 }
