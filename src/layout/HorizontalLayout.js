@@ -25,5 +25,5 @@ function horizontalLayoutConstructor() {
     @return layout object.
  */
 export const HorizontalLayout = (...properties) => {
-    return Layout({ constructor: horizontalLayoutConstructor, className: 'HorizontalLayout' }, ...properties);
+    return Layout({ constructor: horizontalLayoutConstructor, className: 'HorizontalLayout', style: { width:'100%' } }, ...properties);
 }

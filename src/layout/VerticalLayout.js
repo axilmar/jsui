@@ -25,5 +25,5 @@ function verticalLayoutConstructor() {
     @return layout object.
  */
 export const VerticalLayout = (...properties) => {
-    return Layout({ constructor: verticalLayoutConstructor, className: 'VerticalLayout' }, ...properties);
+    return Layout({ constructor: verticalLayoutConstructor, className: 'VerticalLayout', style: { height:'100%' } }, ...properties);
 }
