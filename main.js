@@ -1,5 +1,5 @@
 import { anchor, div, span, text } from './src/html.js';
-import { HorizontalLayout, VerticalLayout, FlexibleLayout, combineLayouts, FixedLayout, GridLayout, HorizontalBox, VerticalBox } from './src/layout.js';
+import { HorizontalLayout, VerticalLayout, FlexibleLayout, combineLayouts, FixedLayout, GridLayout, HorizontalBox, VerticalBox, GridBox } from './src/layout.js';
 
 const theme1 = {
     decorateElement(element, treeState) {
@@ -58,7 +58,23 @@ div({
     style: { backgroundColor: 'orange' },
     layout: GridLayout({columns: 3}),
     children: [
-        HorizontalBox({children: [span({children:'cell 1-A'}), span({children:'cell 1-B'})]}),
+        HorizontalBox({layoutProperties: {gap: '32px'}, children: [span({children:'cell 1-A'}), span({children:'cell 1-B'})]}),
+        div({children: 'cell 2'}),
+        div({children: 'cell 3'}),
+        div({children: 'cell 4'}),
+        div({children: 'cell 5'}),
+        div({children: 'cell 6'}),
+        div({children: 'cell 7'}),
+        VerticalBox({children: [span({children:'cell 8-A   '}), span({children:'   cell 8-B'})]}),
+    ]
+});
+
+GridBox({
+    parent: document.body,
+    style: { backgroundColor: 'aqua' },
+    columns: 4,
+    children: [
+        HorizontalBox({layoutProperties: {gap: '32px'}, children: [span({children:'cell 1-A'}), span({children:'cell 1-B'})]}),
         div({children: 'cell 2'}),
         div({children: 'cell 3'}),
         div({children: 'cell 4'}),

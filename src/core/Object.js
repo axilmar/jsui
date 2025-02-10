@@ -101,21 +101,22 @@ export const Object = (object, ...properties) => {
     //also create the aggregate class name
     let className = 'Object';
     for(const propertiesObject of properties) {
-        
-        //handle constructor
-        const extraConstructor = propertiesObject.constructor;
-        if (extraConstructor) {
-            const existingConstructor = object.constructor;
-            object.constructor = function () {
-                existingConstructor.apply(this);
-                extraConstructor.apply(this);
-            };
-        }
-        
-        //handle classname
-        const extraClassName = propertiesObject.className;
-        if (extraClassName) {
-            className = className + ' ' + extraClassName;
+        if (propertiesObject) {
+            //handle constructor
+            const extraConstructor = propertiesObject.constructor;
+            if (extraConstructor) {
+                const existingConstructor = object.constructor;
+                object.constructor = function () {
+                    existingConstructor.apply(this);
+                    extraConstructor.apply(this);
+                };
+            }
+            
+            //handle classname
+            const extraClassName = propertiesObject.className;
+            if (extraClassName) {
+                className = className + ' ' + extraClassName;
+            }
         }
     }
     
