@@ -598,6 +598,14 @@ function elementConstructorFunction() {
             { className: 'div1', style: { backgroundColor: 'red', width: '32px', height: '32px' }},
             { className: 'div2', constructor: div2_constructor, style: { display: flex, alignItems: 'center' }, children: [ document.createElement('input') ]},
             );
+            
+        @example
+        //create an element with multiple children 
+        div('child1', 'child2');
+        
+        @example
+        //create an element with some properties and with multiple children 
+        div({ style: { backgroundColor: 'red' }}, 'child1', 'child2');
         
     @param element element to construct.    
     @param properties array of objects with element properties. 

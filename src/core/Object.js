@@ -1,4 +1,5 @@
 import { defineValueProperty, defineInterfaceProperty, isPropertyReadOnly } from './properties.js';
+import { isString } from '../util/typeUtil.js';
 
 //sets the class name
 const setClassName = (element, className) => {
@@ -80,7 +81,11 @@ const isSpecialPropertyName = (name) => {
     
     @param properties properties objects.
     
-        Each properties object shall contain key/value pairs for the object's properties.
+        Each properties object shall either 
+        
+            - contain key/value pairs for the object's properties.
+            - be an array of elements.
+            - be a string.
         
         Special properties for a properties object:
         
@@ -90,7 +95,35 @@ const isSpecialPropertyName = (name) => {
                 
             - className:
                 It is used to create an aggregate class name for the object.
+                
+        The properties objects can also be a list of UI elements, including strings.
+        If the whole properties objects list contains only UI elements and strings,
+        then these are added as children to the object, via the method 'append'.
     
+        @Example
+        //create a text node (properties is a simple string)
+        text('the quick brown fox')
+        
+        @Example
+        //a div with children 
+        div(['child1', 'child2']);
+        
+        @Example
+        //a div with properties
+        div({ style: { backgroundColor: 'aqua' } });
+            
+        @Example
+        //a div with properties and children
+        div({ style: { backgroundColor: 'aqua', children: ['child1', 'child2'] } });
+        
+        @Example
+        //a div with properties and children (alternative declaration)
+        div({ style: { backgroundColor: 'aqua'} }, ['child1', 'child2']);
+            
+        @Example
+        //a div with children only
+        div(span('child1'), 'child2');
+            
     @return the given object.
  */
 export const Object = (object, ...properties) => {
@@ -98,24 +131,32 @@ export const Object = (object, ...properties) => {
     object.constructor = objectConstructor;
     
     //create the aggregate constructor function;
-    //also create the aggregate class name
+    //also create the aggregate class name;
+    //also count number of objects that have a isJSUIObject flag set or are strings.
+    let objectCount = 0;
     let className = 'Object';
-    for(const propertiesObject of properties) {
+    for(const propertiesObject of properties) {        
         if (propertiesObject) {
-            //handle constructor
-            const extraConstructor = propertiesObject.constructor;
-            if (extraConstructor) {
-                const existingConstructor = object.constructor;
-                object.constructor = function () {
-                    existingConstructor.apply(this);
-                    extraConstructor.apply(this);
-                };
-            }
+            const isObjectAString = isString(propertiesObject);
             
-            //handle classname
-            const extraClassName = propertiesObject.className;
-            if (extraClassName) {
-                className = className + ' ' + extraClassName;
+            objectCount += (propertiesObject.isJSUIObject || isObjectAString) ? 1 : 0;
+            
+            if (!Array.isArray(propertiesObject) && !isObjectAString && !propertiesObject.isJSUIObject) {
+                //handle constructor
+                const extraConstructor = propertiesObject.constructor;
+                if (extraConstructor) {
+                    const existingConstructor = object.constructor;
+                    object.constructor = function () {
+                        existingConstructor.apply(this);
+                        extraConstructor.apply(this);
+                    };
+                }
+                
+                //handle classname
+                const extraClassName = propertiesObject.className;
+                if (extraClassName) {
+                    className = className + ' ' + extraClassName;
+                }
             }
         }
     }
@@ -126,11 +167,39 @@ export const Object = (object, ...properties) => {
     //set the classname property
     object.className = className;
     
-    //set other properties
-    for(const propertiesObject of properties) {
-        for(const propertyName in propertiesObject) {
-            if (!isSpecialPropertyName(propertyName)) {
-                object[propertyName] = propertiesObject[propertyName];
+    //set a flag to recognize JSUI objects 
+    object.isJSUIObject = true;
+    
+    //if all properties objects are objects, add them to this object
+    if (objectCount === properties.length) {
+        for(const child of properties) {
+            object.append(child);
+        }
+    }
+    
+    //else set other properties/add children
+    else 
+    {
+        for(const propertiesObject of properties) {
+            if (propertiesObject) {
+                if (Array.isArray(propertiesObject)) {
+                    for(const child of propertiesObject) {
+                        object.append(child);
+                    }
+                }
+                else if (isString(propertiesObject)) {
+                    object.append(propertiesObject);
+                }
+                else if (propertiesObject.isJSUIObject) {
+                    object.append(propertiesObject);
+                }
+                else {
+                    for(const propertyName in propertiesObject) {
+                        if (!isSpecialPropertyName(propertyName)) {
+                            object[propertyName] = propertiesObject[propertyName];
+                        }
+                    }
+                }
             }
         }
     }

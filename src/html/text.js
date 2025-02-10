@@ -27,10 +27,10 @@ export const text = (...properties) => {
         className: 'text'
     };
     
-    if (isString(properties)) {
-        return Object(document.createTextNode(properties), textProperties);
-    }
-    else {
-        return Object(document.createTextNode(''), textProperties, ...properties);
-    }
+    const isPropertiesAString = isString(...properties);
+    
+    const node = isPropertiesAString ? document.createTextNode(...properties) : document.createTextNode('');
+    node.isJSUIObject = true;
+    
+    return isPropertiesAString ? Object(node, textProperties) : Object(node, textProperties, ...properties);
 }
