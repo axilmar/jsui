@@ -27,3 +27,8 @@ function horizontalLayoutConstructor() {
 export const HorizontalLayout = (...properties) => {
     return Layout({ constructor: horizontalLayoutConstructor, className: 'HorizontalLayout', style: { width:'100%' } }, ...properties);
 }
+
+/**
+ * Alternative shorter symbol for HorizontalLayout.
+ */
+export const HLayout = HorizontalLayout;
