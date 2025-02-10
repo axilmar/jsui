@@ -9,6 +9,6 @@ import { GridLayout } from './GridLayout.js';
         a property 'columns' in the first properties object is used for customizing the columns number.
     @return a grid box.
  */
-export const GridBox = (...properties) => {
-    return div({ className: 'GridBox', layout: GridLayout({ columns: properties[0]?.columns || 1 }, properties[0]?.layoutProperties) }, ...properties);
+export const Grid = (...properties) => {
+    return div({ className: 'Grid', layout: GridLayout({ columns: properties[0]?.columns || 1 }, properties[0]?.layoutProperties) }, ...properties);
 }

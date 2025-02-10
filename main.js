@@ -1,5 +1,5 @@
 import { a, div, span, text } from './src/html.js';
-import { HorizontalLayout, VerticalLayout, FlexibleLayout, combineLayouts, FixedLayout, GridLayout, HorizontalBox, VerticalBox, GridBox } from './src/layout.js';
+import { HorizontalLayout, VerticalLayout, FlexibleLayout, combineLayouts, FixedLayout, GridLayout, HorizontalBox, VerticalBox, Grid } from './src/layout.js';
 
 const theme1 = {
     decorateElement(element, treeState) {
@@ -69,7 +69,7 @@ div({
     ]
 });
 
-GridBox({
+Grid({
     parent: document.body,
     style: { backgroundColor: 'aqua' },
     columns: 4,

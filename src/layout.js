@@ -3,7 +3,7 @@ export * from './layout/FixedBox.js';
 export * from './layout/FixedLayout.js';
 export * from './layout/FlexibleBox.js';
 export * from './layout/FlexibleLayout.js';
-export * from './layout/GridBox.js';
+export * from './layout/Grid.js';
 export * from './layout/GridLayout.js';
 export * from './layout/HorizontalBox.js';
 export * from './layout/HorizontalLayout.js';
