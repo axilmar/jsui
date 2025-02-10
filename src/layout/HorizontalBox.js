@@ -10,3 +10,8 @@ import { HorizontalLayout } from './HorizontalLayout.js';
 export const HorizontalBox = (...properties) => {
     return div({ className: 'HorizontalBox', layout: HorizontalLayout({ gap: '8px' }, properties[0]?.layoutProperties) }, ...properties);
 }
+
+/**
+ * Alternative shorter symbol for HorizontalBox.
+ */
+export const HBox = HorizontalBox;

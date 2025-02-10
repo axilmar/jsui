@@ -10,3 +10,8 @@ import { VerticalLayout } from './VerticalLayout.js';
 export const VerticalBox = (...properties) => {
     return div({ className: 'VerticalBox', layout: VerticalLayout({ gap: '8px' }, properties[0]?.layoutProperties) }, ...properties);
 }
+
+/**
+ * Alternative shorter symbol for VerticalBox.
+ */
+export const VBox = VerticalBox;
