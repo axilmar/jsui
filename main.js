@@ -1,5 +1,5 @@
 import { anchor, div, span, text } from './src/html.js';
-import { HorizontalLayout, VerticalLayout, FlexibleLayout, combineLayouts, FixedLayout, GridLayout } from './src/layout.js';
+import { HorizontalLayout, VerticalLayout, FlexibleLayout, combineLayouts, FixedLayout, GridLayout, HorizontalBox, VerticalBox } from './src/layout.js';
 
 const theme1 = {
     decorateElement(element, treeState) {
@@ -58,13 +58,13 @@ div({
     style: { backgroundColor: 'orange' },
     layout: GridLayout({columns: 3}),
     children: [
-        div({children: 'cell 1'}),
+        HorizontalBox({children: [span({children:'cell 1-A'}), span({children:'cell 1-B'})]}),
         div({children: 'cell 2'}),
         div({children: 'cell 3'}),
         div({children: 'cell 4'}),
         div({children: 'cell 5'}),
         div({children: 'cell 6'}),
         div({children: 'cell 7'}),
-        div({children: 'cell 8'}),
+        VerticalBox({children: [span({children:'cell 8-A   '}), span({children:'   cell 8-B'})]}),
     ]
 });
