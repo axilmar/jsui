@@ -1,4 +1,4 @@
-export * from './html/anchor.js';
+export * from './html/a.js';
 export * from './html/area.js';
 export * from './html/article.js';
 export * from './html/audio.js';

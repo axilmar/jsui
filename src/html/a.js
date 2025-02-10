@@ -5,6 +5,6 @@ import { Element } from './Element.js';
     @param properties property object list.
     @return anchor element.
  */
-export const anchor = (...properties) => {
-    return Element(document.createElement('a'), { className: 'anchor' }, ...properties);
+export const a = (...properties) => {
+    return Element(document.createElement('a'), { className: 'a' }, ...properties);
 }
